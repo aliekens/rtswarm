@@ -1,0 +1,605 @@
+[
+  {
+    "output_file": "output/alert/base_under_attack_alert.wav",
+    "freesound_id": 104292,
+    "name": "klaxon3dry.wav",
+    "author": "ryansnook",
+    "license": "https://creativecommons.org/licenses/by-nc/4.0/",
+    "source_url": "https://freesound.org/people/ryansnook/sounds/104292/",
+    "duration_seconds": 2.0
+  },
+  {
+    "output_file": "output/alert/building_under_attack.wav",
+    "freesound_id": 467882,
+    "name": "Beep warning",
+    "author": "SamsterBirdies",
+    "license": "http://creativecommons.org/publicdomain/zero/1.0/",
+    "source_url": "https://freesound.org/people/SamsterBirdies/sounds/467882/",
+    "duration_seconds": 1.71685
+  },
+  {
+    "output_file": "output/alert/commander_low_health.wav",
+    "freesound_id": 541434,
+    "name": "heartbeat.wav",
+    "author": "PollyannaMedia",
+    "license": "http://creativecommons.org/publicdomain/zero/1.0/",
+    "source_url": "https://freesound.org/people/PollyannaMedia/sounds/541434/",
+    "duration_seconds": 2.40327
+  },
+  {
+    "output_file": "output/alert/minimap_ping.wav",
+    "freesound_id": 128095,
+    "name": "soonar.wav",
+    "author": "tim.kahn",
+    "license": "https://creativecommons.org/licenses/by/4.0/",
+    "source_url": "https://freesound.org/people/tim.kahn/sounds/128095/",
+    "duration_seconds": 0.616771
+  },
+  {
+    "output_file": "output/event/building_complete.wav",
+    "freesound_id": 660862,
+    "name": "Chime-Strong.flac",
+    "author": "drooler",
+    "license": "http://creativecommons.org/publicdomain/zero/1.0/",
+    "source_url": "https://freesound.org/people/drooler/sounds/660862/",
+    "duration_seconds": 1.36649
+  },
+  {
+    "output_file": "output/event/building_placement.wav",
+    "freesound_id": 640204,
+    "name": "Heavy Metal Thud on Ground",
+    "author": "7of9Designs",
+    "license": "http://creativecommons.org/publicdomain/zero/1.0/",
+    "source_url": "https://freesound.org/people/7of9Designs/sounds/640204/",
+    "duration_seconds": 0.748798
+  },
+  {
+    "output_file": "output/event/crystal_deposit.wav",
+    "freesound_id": 198389,
+    "name": "ANI - Cocktail Glass - Hard Reversed 1a",
+    "author": "ani_music",
+    "license": "http://creativecommons.org/publicdomain/zero/1.0/",
+    "source_url": "https://freesound.org/people/ani_music/sounds/198389/",
+    "duration_seconds": 0.586281
+  },
+  {
+    "output_file": "output/event/crystal_field_depleted.wav",
+    "freesound_id": 562196,
+    "name": "snd_fragment_retrieve.wav",
+    "author": "gristi",
+    "license": "http://creativecommons.org/publicdomain/zero/1.0/",
+    "source_url": "https://freesound.org/people/gristi/sounds/562196/",
+    "duration_seconds": 1.7015
+  },
+  {
+    "output_file": "output/event/crystal_field_respawn.wav",
+    "freesound_id": 376745,
+    "name": "Fantasy_ui_Button_3.wav",
+    "author": "ZenithInfinitiveStudios",
+    "license": "http://creativecommons.org/publicdomain/zero/1.0/",
+    "source_url": "https://freesound.org/people/ZenithInfinitiveStudios/sounds/376745/",
+    "duration_seconds": 1.26524
+  },
+  {
+    "output_file": "output/event/explosion_large_1.wav",
+    "freesound_id": 37988,
+    "name": "blast.wav",
+    "author": "kathol",
+    "license": "http://creativecommons.org/publicdomain/zero/1.0/",
+    "source_url": "https://freesound.org/people/kathol/sounds/37988/",
+    "duration_seconds": 1.2
+  },
+  {
+    "output_file": "output/event/explosion_large_2.wav",
+    "freesound_id": 587887,
+    "name": "Explosion in a can",
+    "author": "SamsterBirdies",
+    "license": "http://creativecommons.org/publicdomain/zero/1.0/",
+    "source_url": "https://freesound.org/people/SamsterBirdies/sounds/587887/",
+    "duration_seconds": 3.35576
+  },
+  {
+    "output_file": "output/event/explosion_large_3.wav",
+    "freesound_id": 186952,
+    "name": "cannon_boom6.wav",
+    "author": "ReadeOnly",
+    "license": "http://creativecommons.org/publicdomain/zero/1.0/",
+    "source_url": "https://freesound.org/people/ReadeOnly/sounds/186952/",
+    "duration_seconds": 1.72056
+  },
+  {
+    "output_file": "output/event/explosion_small_1.wav",
+    "freesound_id": 520046,
+    "name": "Grenade_Cycle_Reload_03.wav",
+    "author": "xFromarge1",
+    "license": "http://creativecommons.org/publicdomain/zero/1.0/",
+    "source_url": "https://freesound.org/people/xFromarge1/sounds/520046/",
+    "duration_seconds": 0.562494
+  },
+  {
+    "output_file": "output/event/explosion_small_2.wav",
+    "freesound_id": 521620,
+    "name": "Electronic bomb.wav",
+    "author": "lucas-post",
+    "license": "https://creativecommons.org/licenses/by/4.0/",
+    "source_url": "https://freesound.org/people/lucas-post/sounds/521620/",
+    "duration_seconds": 0.698186
+  },
+  {
+    "output_file": "output/event/explosion_small_3.wav",
+    "freesound_id": 478276,
+    "name": "8-Bit Explosion 1_7",
+    "author": "Joao_Janz",
+    "license": "http://creativecommons.org/publicdomain/zero/1.0/",
+    "source_url": "https://freesound.org/people/Joao_Janz/sounds/478276/",
+    "duration_seconds": 1.3125
+  },
+  {
+    "output_file": "output/event/frost_pulse.wav",
+    "freesound_id": 709888,
+    "name": "Ice Magic Arrow_type 01",
+    "author": "lotteria001",
+    "license": "http://creativecommons.org/publicdomain/zero/1.0/",
+    "source_url": "https://freesound.org/people/lotteria001/sounds/709888/",
+    "duration_seconds": 2.39646
+  },
+  {
+    "output_file": "output/event/harvester_pickup.wav",
+    "freesound_id": 98445,
+    "name": "Machine loop 16.wav",
+    "author": "The Baron",
+    "license": "https://creativecommons.org/licenses/by/4.0/",
+    "source_url": "https://freesound.org/people/The%20Baron/sounds/98445/",
+    "duration_seconds": 1.31604
+  },
+  {
+    "output_file": "output/event/heal_pulse.wav",
+    "freesound_id": 376745,
+    "name": "Fantasy_ui_Button_3.wav",
+    "author": "ZenithInfinitiveStudios",
+    "license": "http://creativecommons.org/publicdomain/zero/1.0/",
+    "source_url": "https://freesound.org/people/ZenithInfinitiveStudios/sounds/376745/",
+    "duration_seconds": 1.26524
+  },
+  {
+    "output_file": "output/event/lightning_zap.wav",
+    "freesound_id": 143565,
+    "name": "zap.mp3",
+    "author": "YvesSch",
+    "license": "http://creativecommons.org/publicdomain/zero/1.0/",
+    "source_url": "https://freesound.org/people/YvesSch/sounds/143565/",
+    "duration_seconds": 0.614943
+  },
+  {
+    "output_file": "output/event/reaver_impact_1.wav",
+    "freesound_id": 854508,
+    "name": "Explosive Charge 1",
+    "author": "qubodup",
+    "license": "http://creativecommons.org/publicdomain/zero/1.0/",
+    "source_url": "https://freesound.org/people/qubodup/sounds/854508/",
+    "duration_seconds": 1.30319
+  },
+  {
+    "output_file": "output/event/splash_impact.wav",
+    "freesound_id": 431174,
+    "name": "Fireball Explosion.wav",
+    "author": "HighPixel",
+    "license": "http://creativecommons.org/publicdomain/zero/1.0/",
+    "source_url": "https://freesound.org/people/HighPixel/sounds/431174/",
+    "duration_seconds": 1.0819
+  },
+  {
+    "output_file": "output/event/symbiont_fusion_1.wav",
+    "freesound_id": 178349,
+    "name": "S_Teleport_01.wav",
+    "author": "Andromadax24",
+    "license": "https://creativecommons.org/licenses/by/4.0/",
+    "source_url": "https://freesound.org/people/Andromadax24/sounds/178349/",
+    "duration_seconds": 2.51222
+  },
+  {
+    "output_file": "output/event/symbiont_fusion_2.wav",
+    "freesound_id": 703284,
+    "name": "FX_UX_quick_shimmer_reactive_wait and rise.wav",
+    "author": "PLukx",
+    "license": "http://creativecommons.org/publicdomain/zero/1.0/",
+    "source_url": "https://freesound.org/people/PLukx/sounds/703284/",
+    "duration_seconds": 0.556961
+  },
+  {
+    "output_file": "output/event/unit_squish.wav",
+    "freesound_id": 641046,
+    "name": "Gore Impact - \"LOT OF HEART\"",
+    "author": "magnuswaker",
+    "license": "http://creativecommons.org/publicdomain/zero/1.0/",
+    "source_url": "https://freesound.org/people/magnuswaker/sounds/641046/",
+    "duration_seconds": 1.14986
+  },
+  {
+    "output_file": "output/game_state/defeat.wav",
+    "freesound_id": 99493,
+    "name": "g3.wav",
+    "author": "newshooze",
+    "license": "http://creativecommons.org/publicdomain/zero/1.0/",
+    "source_url": "https://freesound.org/people/newshooze/sounds/99493/",
+    "duration_seconds": 1.71828
+  },
+  {
+    "output_file": "output/game_state/game_start_1.wav",
+    "freesound_id": 563403,
+    "name": "UI_Microprocess start glitch(3lrs,mltprcssng).wav",
+    "author": "newlocknew",
+    "license": "https://creativecommons.org/licenses/by/4.0/",
+    "source_url": "https://freesound.org/people/newlocknew/sounds/563403/",
+    "duration_seconds": 1.78946
+  },
+  {
+    "output_file": "output/game_state/game_start_2.wav",
+    "freesound_id": 351879,
+    "name": "Computer Chimes - Notification.aif",
+    "author": "marlonnnnnn",
+    "license": "http://creativecommons.org/publicdomain/zero/1.0/",
+    "source_url": "https://freesound.org/people/marlonnnnnn/sounds/351879/",
+    "duration_seconds": 1.5
+  },
+  {
+    "output_file": "output/game_state/tribe_eliminated.wav",
+    "freesound_id": 350984,
+    "name": "Lose_C_03",
+    "author": "cabled_mess",
+    "license": "http://creativecommons.org/publicdomain/zero/1.0/",
+    "source_url": "https://freesound.org/people/cabled_mess/sounds/350984/",
+    "duration_seconds": 1.38385
+  },
+  {
+    "output_file": "output/game_state/victory_fanfare.wav",
+    "freesound_id": 580310,
+    "name": "Fanfare 2 - Rpg",
+    "author": "colorsCrimsonTears",
+    "license": "http://creativecommons.org/publicdomain/zero/1.0/",
+    "source_url": "https://freesound.org/people/colorsCrimsonTears/sounds/580310/",
+    "duration_seconds": 1.80858
+  },
+  {
+    "output_file": "output/tribe_super/aurum_super_sanctuary_pulse.wav",
+    "freesound_id": 64427,
+    "name": "chamber_choir_parallel_fifths_2.wav",
+    "author": "uair01",
+    "license": "http://creativecommons.org/licenses/by/3.0/",
+    "source_url": "https://freesound.org/people/uair01/sounds/64427/",
+    "duration_seconds": 5.78134
+  },
+  {
+    "output_file": "output/tribe_super/bloodhound_super_blood_frenzy.wav",
+    "freesound_id": 753896,
+    "name": "Adult and young wolves howling far away",
+    "author": "Sacha.Julien",
+    "license": "http://creativecommons.org/publicdomain/zero/1.0/",
+    "source_url": "https://freesound.org/people/Sacha.Julien/sounds/753896/",
+    "duration_seconds": 4.26117
+  },
+  {
+    "output_file": "output/tribe_super/forgeborn_super_nuke_impact.wav",
+    "freesound_id": 813979,
+    "name": "distant explosion",
+    "author": "Alliare",
+    "license": "http://creativecommons.org/publicdomain/zero/1.0/",
+    "source_url": "https://freesound.org/people/Alliare/sounds/813979/",
+    "duration_seconds": 4.87298
+  },
+  {
+    "output_file": "output/tribe_super/skyforce_super_lightning_storm.wav",
+    "freesound_id": 693875,
+    "name": "thunder2.wav",
+    "author": "BeroundSound",
+    "license": "http://creativecommons.org/publicdomain/zero/1.0/",
+    "source_url": "https://freesound.org/people/BeroundSound/sounds/693875/",
+    "duration_seconds": 2.25375
+  },
+  {
+    "output_file": "output/tribe_super/symbiont_super_genome_burst.wav",
+    "freesound_id": 620356,
+    "name": "Alien Pulse Gun shoot.wav",
+    "author": "marb7e",
+    "license": "https://creativecommons.org/licenses/by/4.0/",
+    "source_url": "https://freesound.org/people/marb7e/sounds/620356/",
+    "duration_seconds": 2.0225
+  },
+  {
+    "output_file": "output/tribe_super/thornwood_super_deep_freeze.wav",
+    "freesound_id": 844260,
+    "name": "Subzero Frost Loop (Short)",
+    "author": "qubodup",
+    "license": "http://creativecommons.org/publicdomain/zero/1.0/",
+    "source_url": "https://freesound.org/people/qubodup/sounds/844260/",
+    "duration_seconds": 2.3745
+  },
+  {
+    "output_file": "output/tribe_super/vexkin_super_wasp_storm.wav",
+    "freesound_id": 462867,
+    "name": "Agressive Bees",
+    "author": "dlp_coasters",
+    "license": "http://creativecommons.org/publicdomain/zero/1.0/",
+    "source_url": "https://freesound.org/people/dlp_coasters/sounds/462867/",
+    "duration_seconds": 3.60878
+  },
+  {
+    "output_file": "output/tribe_super/wraith_super_poison_cloud.wav",
+    "freesound_id": 553374,
+    "name": "Snake Hiss",
+    "author": "xoiziox",
+    "license": "http://creativecommons.org/publicdomain/zero/1.0/",
+    "source_url": "https://freesound.org/people/xoiziox/sounds/553374/",
+    "duration_seconds": 3.6
+  },
+  {
+    "output_file": "output/ui/build_denied.wav",
+    "freesound_id": 699923,
+    "name": "Multimedia SFX - Error 01.wav",
+    "author": "8bitmyketison",
+    "license": "http://creativecommons.org/publicdomain/zero/1.0/",
+    "source_url": "https://freesound.org/people/8bitmyketison/sounds/699923/",
+    "duration_seconds": 0.161769
+  },
+  {
+    "output_file": "output/ui/first_contact.wav",
+    "freesound_id": 183500,
+    "name": "Piano Cord.wav",
+    "author": "ecfike",
+    "license": "http://creativecommons.org/publicdomain/zero/1.0/",
+    "source_url": "https://freesound.org/people/ecfike/sounds/183500/",
+    "duration_seconds": 1.74914
+  },
+  {
+    "output_file": "output/ui/level_up.wav",
+    "freesound_id": 138486,
+    "name": "Powerup 2",
+    "author": "JustInvoke",
+    "license": "http://creativecommons.org/publicdomain/zero/1.0/",
+    "source_url": "https://freesound.org/people/JustInvoke/sounds/138486/",
+    "duration_seconds": 1.00816
+  },
+  {
+    "output_file": "output/ui/radar_on.wav",
+    "freesound_id": 371178,
+    "name": "Sonar sweep beep",
+    "author": "SamsterBirdies",
+    "license": "http://creativecommons.org/publicdomain/zero/1.0/",
+    "source_url": "https://freesound.org/people/SamsterBirdies/sounds/371178/",
+    "duration_seconds": 1.5361
+  },
+  {
+    "output_file": "output/ui/reinforcements_arrived.wav",
+    "freesound_id": 566203,
+    "name": "Fanfare - Rpg",
+    "author": "colorsCrimsonTears",
+    "license": "http://creativecommons.org/publicdomain/zero/1.0/",
+    "source_url": "https://freesound.org/people/colorsCrimsonTears/sounds/566203/",
+    "duration_seconds": 1.18402
+  },
+  {
+    "output_file": "output/ui/spectator_speed_toggle.wav",
+    "freesound_id": 561347,
+    "name": "beep.wav",
+    "author": "SamsterBirdies",
+    "license": "http://creativecommons.org/publicdomain/zero/1.0/",
+    "source_url": "https://freesound.org/people/SamsterBirdies/sounds/561347/",
+    "duration_seconds": 0.302971
+  },
+  {
+    "output_file": "output/ui/super_weapon_arming.wav",
+    "freesound_id": 592573,
+    "name": "Laser Charge Up (Stronger)",
+    "author": "magnuswaker",
+    "license": "http://creativecommons.org/publicdomain/zero/1.0/",
+    "source_url": "https://freesound.org/people/magnuswaker/sounds/592573/",
+    "duration_seconds": 1.10034
+  },
+  {
+    "output_file": "output/ui/super_weapon_ready.wav",
+    "freesound_id": 138486,
+    "name": "Powerup 2",
+    "author": "JustInvoke",
+    "license": "http://creativecommons.org/publicdomain/zero/1.0/",
+    "source_url": "https://freesound.org/people/JustInvoke/sounds/138486/",
+    "duration_seconds": 1.00816
+  },
+  {
+    "output_file": "output/ui/tutorial_dialog_appear.wav",
+    "freesound_id": 186719,
+    "name": "Chime_01.wav",
+    "author": "Andromadax24",
+    "license": "https://creativecommons.org/licenses/by/4.0/",
+    "source_url": "https://freesound.org/people/Andromadax24/sounds/186719/",
+    "duration_seconds": 1.33121
+  },
+  {
+    "output_file": "output/ui/tutorial_objective_complete.wav",
+    "freesound_id": 571511,
+    "name": "Soft-Notifications - Bell - LowDing.mp3",
+    "author": "LegitCheese",
+    "license": "http://creativecommons.org/publicdomain/zero/1.0/",
+    "source_url": "https://freesound.org/people/LegitCheese/sounds/571511/",
+    "duration_seconds": 0.683375
+  },
+  {
+    "output_file": "output/ui/ui_click.wav",
+    "freesound_id": 677860,
+    "name": "UI Button Click Snap",
+    "author": "el_boss",
+    "license": "http://creativecommons.org/publicdomain/zero/1.0/",
+    "source_url": "https://freesound.org/people/el_boss/sounds/677860/",
+    "duration_seconds": 0.306083
+  },
+  {
+    "output_file": "output/unit_special/reaver_charge.wav",
+    "freesound_id": 803766,
+    "name": "bushigh2.wav",
+    "author": "Mihacappy",
+    "license": "http://creativecommons.org/publicdomain/zero/1.0/",
+    "source_url": "https://freesound.org/people/Mihacappy/sounds/803766/",
+    "duration_seconds": 0.941587
+  },
+  {
+    "output_file": "output/unit_special/symbiont_siphon_pulse.wav",
+    "freesound_id": 466556,
+    "name": "Little blip",
+    "author": "danieldouch",
+    "license": "https://creativecommons.org/licenses/by/4.0/",
+    "source_url": "https://freesound.org/people/danieldouch/sounds/466556/",
+    "duration_seconds": 0.0939375
+  },
+  {
+    "output_file": "output/unit_special/vexkin_swarm_flyby.wav",
+    "freesound_id": 612166,
+    "name": "Glowing effect",
+    "author": "felineterror",
+    "license": "https://creativecommons.org/licenses/by/4.0/",
+    "source_url": "https://freesound.org/people/felineterror/sounds/612166/",
+    "duration_seconds": 1.19819
+  },
+  {
+    "output_file": "output/unit_special/wraith_phase_in.wav",
+    "freesound_id": 742943,
+    "name": "Woosh - Plastic Tray 2",
+    "author": "Sadiquecat",
+    "license": "http://creativecommons.org/publicdomain/zero/1.0/",
+    "source_url": "https://freesound.org/people/Sadiquecat/sounds/742943/",
+    "duration_seconds": 0.671615
+  },
+  {
+    "output_file": "output/unit_special/wraith_phase_out.wav",
+    "freesound_id": 73263,
+    "name": "whoosh.soft.wav",
+    "author": "junggle",
+    "license": "https://creativecommons.org/licenses/by/4.0/",
+    "source_url": "https://freesound.org/people/junggle/sounds/73263/",
+    "duration_seconds": 0.367891
+  },
+  {
+    "output_file": "output/voice/unit_death_1.wav",
+    "freesound_id": 547188,
+    "name": "Voice_AdultMale_DeathScream_05.wav",
+    "author": "MrFossy",
+    "license": "http://creativecommons.org/publicdomain/zero/1.0/",
+    "source_url": "https://freesound.org/people/MrFossy/sounds/547188/",
+    "duration_seconds": 0.765918
+  },
+  {
+    "output_file": "output/voice/unit_death_2.wav",
+    "freesound_id": 547190,
+    "name": "Voice_AdultMale_DeathScream_09.wav",
+    "author": "MrFossy",
+    "license": "http://creativecommons.org/publicdomain/zero/1.0/",
+    "source_url": "https://freesound.org/people/MrFossy/sounds/547190/",
+    "duration_seconds": 1.28649
+  },
+  {
+    "output_file": "output/voice/unit_death_3.wav",
+    "freesound_id": 547189,
+    "name": "Voice_AdultMale_DeathScream_10.wav",
+    "author": "MrFossy",
+    "license": "http://creativecommons.org/publicdomain/zero/1.0/",
+    "source_url": "https://freesound.org/people/MrFossy/sounds/547189/",
+    "duration_seconds": 1.13848
+  },
+  {
+    "output_file": "output/voice/unit_death_4.wav",
+    "freesound_id": 547187,
+    "name": "Voice_AdultMale_DeathScream_06.wav",
+    "author": "MrFossy",
+    "license": "http://creativecommons.org/publicdomain/zero/1.0/",
+    "source_url": "https://freesound.org/people/MrFossy/sounds/547187/",
+    "duration_seconds": 0.784966
+  },
+  {
+    "output_file": "output/voice/unit_death_5.wav",
+    "freesound_id": 547186,
+    "name": "Voice_AdultMale_DeathScream_07.wav",
+    "author": "MrFossy",
+    "license": "http://creativecommons.org/publicdomain/zero/1.0/",
+    "source_url": "https://freesound.org/people/MrFossy/sounds/547186/",
+    "duration_seconds": 1.0539
+  },
+  {
+    "output_file": "output/voice/unit_death_6.wav",
+    "freesound_id": 547185,
+    "name": "Voice_AdultMale_DeathScream_08.wav",
+    "author": "MrFossy",
+    "license": "http://creativecommons.org/publicdomain/zero/1.0/",
+    "source_url": "https://freesound.org/people/MrFossy/sounds/547185/",
+    "duration_seconds": 1.18474
+  },
+  {
+    "output_file": "output/voice/unit_death_7.wav",
+    "freesound_id": 547184,
+    "name": "Voice_AdultMale_DeathScream_01.wav",
+    "author": "MrFossy",
+    "license": "http://creativecommons.org/publicdomain/zero/1.0/",
+    "source_url": "https://freesound.org/people/MrFossy/sounds/547184/",
+    "duration_seconds": 1.05975
+  },
+  {
+    "output_file": "output/weapon/cannon_fire_2.wav",
+    "freesound_id": 161343,
+    "name": "Howitzer Artillery Gun Shot Sound Effect 01",
+    "author": "qubodup",
+    "license": "http://creativecommons.org/publicdomain/zero/1.0/",
+    "source_url": "https://freesound.org/people/qubodup/sounds/161343/",
+    "duration_seconds": 0.8
+  },
+  {
+    "output_file": "output/weapon/heavy_cannon_fire.wav",
+    "freesound_id": 161343,
+    "name": "Howitzer Artillery Gun Shot Sound Effect 01",
+    "author": "qubodup",
+    "license": "http://creativecommons.org/publicdomain/zero/1.0/",
+    "source_url": "https://freesound.org/people/qubodup/sounds/161343/",
+    "duration_seconds": 0.8
+  },
+  {
+    "output_file": "output/weapon/mg_fire_1.wav",
+    "freesound_id": 342184,
+    "name": "BigGun.wav",
+    "author": "Willary1",
+    "license": "http://creativecommons.org/publicdomain/zero/1.0/",
+    "source_url": "https://freesound.org/people/Willary1/sounds/342184/",
+    "duration_seconds": 0.881383
+  },
+  {
+    "output_file": "output/weapon/mg_fire_2.wav",
+    "freesound_id": 854506,
+    "name": "Automatic Rifle Burst 4",
+    "author": "qubodup",
+    "license": "http://creativecommons.org/publicdomain/zero/1.0/",
+    "source_url": "https://freesound.org/people/qubodup/sounds/854506/",
+    "duration_seconds": 1.01798
+  },
+  {
+    "output_file": "output/weapon/pillbox_fire.wav",
+    "freesound_id": 39071,
+    "name": "heavy.burst.wav",
+    "author": "alienbomb",
+    "license": "http://creativecommons.org/publicdomain/zero/1.0/",
+    "source_url": "https://freesound.org/people/alienbomb/sounds/39071/",
+    "duration_seconds": 0.923107
+  },
+  {
+    "output_file": "output/weapon/rifle_fire.wav",
+    "freesound_id": 386845,
+    "name": "Single Gunshot 5.2.wav",
+    "author": "morganpurkis",
+    "license": "http://creativecommons.org/publicdomain/zero/1.0/",
+    "source_url": "https://freesound.org/people/morganpurkis/sounds/386845/",
+    "duration_seconds": 0.646349
+  },
+  {
+    "output_file": "output/weapon/silenced_fire.wav",
+    "freesound_id": 844540,
+    "name": "Gun (Pistol) Shot",
+    "author": "synth2",
+    "license": "http://creativecommons.org/publicdomain/zero/1.0/",
+    "source_url": "https://freesound.org/people/synth2/sounds/844540/",
+    "duration_seconds": 0.745556
+  }
+]

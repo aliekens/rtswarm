@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <!--
+    viewport-fit=cover  — extends layout under iOS notches / home bars
+    user-scalable=no    — kill pinch-zoom (game has its own scaling)
+    interactive-widget  — keep canvas size stable when iOS shows the URL bar
+  -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover, interactive-widget=resizes-content" />
+
+  <!-- iOS Safari "Add to Home Screen" → real full-screen, no browser chrome -->
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <!-- Title displayed under the iOS home-screen icon. Defaults to <title>
+       (RTSwarm) when omitted; declared explicitly so future title tweaks
+       (e.g. a "RTSwarm — match in progress" mid-game title) don't leak
+       through to the home-screen label. -->
+  <meta name="apple-mobile-web-app-title" content="RTSwarm" />
+
+  <!-- Lock the system colour scheme so the page background never flashes white -->
+  <meta name="theme-color" content="#0a1520" />
+  <meta name="color-scheme" content="dark" />
+
+  <!-- Home-screen / browser-tab icons. iOS reads apple-touch-icon (180×180);
+       desktop browsers read the favicon; Android/desktop PWA installs read
+       the webmanifest. Files live in /public so Vite copies them verbatim
+       into the build output. -->
+  <link rel="apple-touch-icon" sizes="180x180" href="./icon-180.png" />
+  <link rel="icon" type="image/png" sizes="32x32" href="./icon-32.png" />
+  <link rel="manifest" href="./manifest.webmanifest" />
+
+  <title>RTSwarm</title>
+  <style>
+    /* Lock the layout to the SMALL viewport height (`100svh`) — that's
+       "the visible area when the browser chrome is fully extended".
+       We pick svh over dvh because `touch-action: none` keeps the
+       chrome from retracting on scroll, so the dynamic viewport never
+       changes anyway; sizing for the smaller worst-case guarantees the
+       canvas + every menu button stay inside the visible area on
+       iOS Safari and Chrome iOS (both of which keep the bottom toolbar
+       persistent). `100vh` is a fallback for very old browsers that
+       lack svh support — they'll get the legacy "canvas overflows by
+       the chrome height" behaviour, which is the best we can do without
+       svh. */
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body {
+      width: 100%;
+      height: 100vh;
+      height: 100svh;
+      background: #000;
+      overflow: hidden;
+      overscroll-behavior: none;
+      touch-action: none;       /* kill double-tap zoom + pull-to-refresh */
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+    /* Don't set `display:flex` on body — Phaser's `autoCenter: CENTER_BOTH`
+       sets ITS OWN flex (column) styles on the parent every refresh, and
+       the two flex configurations fighting was pushing the canvas to one
+       edge on some browsers (uneven letterbox). The safe-area inset lives
+       on the body padding so the canvas's "available area" already
+       excludes the status bar / home indicator; Phaser then centres the
+       FIT-scaled canvas within that inner box → equal letterbox top + bottom. */
+    body {
+      padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+    }
+    canvas { display: block; }
+    /* Phaser's parent — sized in pixels from JS so Phaser's FIT
+       scaler reads a trustworthy parent.clientHeight regardless of
+       iOS Safari quirks. NO CSS padding here: Phaser reads
+       clientHeight, which INCLUDES padding, so a padded box would
+       still report the full height and the canvas would overflow
+       into the safe-area zones. Instead the JS reads each
+       env(safe-area-inset-*) via a probe element and SUBTRACTS the
+       insets from the visualViewport dimensions before setting
+       width/height — the parent then occupies exactly the visible
+       safe area, edge-to-edge. */
+    #game-parent {
+      position: fixed;
+      left: 0;
+      top: 0;
+      width: 100vw;
+      height: 100svh;
+      overflow: hidden;
+    }
+    /* Probe element JS uses to read env(safe-area-inset-*) values
+       — there is no direct JS API for env(), so we measure via a
+       hidden div with paddings set to each side. */
+    #safe-area-probe {
+      position: fixed;
+      visibility: hidden;
+      pointer-events: none;
+      padding-top:    env(safe-area-inset-top);
+      padding-right:  env(safe-area-inset-right);
+      padding-bottom: env(safe-area-inset-bottom);
+      padding-left:   env(safe-area-inset-left);
+    }
+
+    /* Landscape-rotate nudge — appears only when the device is held
+       sideways. The game is portrait-only by design. */
+    #rotate-nudge {
+      position: fixed;
+      inset: 0;
+      display: none;
+      background: #0a1520;
+      color: #aef0ff;
+      font-family: "Open Sans",Arial,sans-serif;
+      font-size: 18px;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 24px;
+      z-index: 9999;
+    }
+    @media (orientation: landscape) and (max-height: 480px) {
+      /* Only show on actually-mobile landscape (short height). Desktop
+         landscape windows shouldn't trigger this. */
+      #rotate-nudge { display: flex; }
+    }
+  </style>
+  <script type="module" crossorigin src="./assets/index-YmNFXYKt.js"></script>
+  <link rel="modulepreload" crossorigin href="./assets/rolldown-runtime-Bh1tDfsg.js">
+  <link rel="modulepreload" crossorigin href="./assets/phaser-D4kX99B1.js">
+  <link rel="stylesheet" crossorigin href="./assets/index-BxwfITEq.css">
+</head>
+<body>
+  <div id="game-parent"></div>
+  <div id="safe-area-probe"></div>
+  <div id="rotate-nudge">↻&nbsp;&nbsp;Please rotate your device<br/>to portrait</div>
+</body>
+</html>

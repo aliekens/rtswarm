@@ -1,0 +1,1681 @@
+{
+  "_meta": {
+    "project": "MiniRTS \u2014 a TypeScript / Phaser 3 RTS in the style of Westwood's 1990s Command & Conquer games. 8 tribes, 390\u00d7844 portrait viewport on a 2000\u00d72000 world, single-player vs AI.",
+    "purpose": "Single source of truth for every audible event in the game. The original Red Alert wavs in ./sounds/ are copyrighted; the library in ./output/ is the replacement that the game should load. Every sound has been auditioned and accepted.",
+    "audio_production_pipeline": "Each output entry has a `type` that determined how it was produced. Types: 'sfx' (Freesound.org sample; the entry preserves `query`+`duration_*`+optional `username` for reproducibility, or a local `source` path that overrides Freesound search and points at a file already on disk). 'tts' (ElevenLabs TTS \u2014 the `text` is spoken by the `voice` resolved from tts_voices, then post-processed by radiofy.py through a bandpass+compression+crackle chain to sound like a military radio). 'alias' (a literal copy of another event's first output; `alias_of` names the source event id). All wavs are mono 22.05 kHz pcm_s16le and loudness-normalized to ~-16 LUFS for consistent in-game playback levels.",
+    "code_wiring_instructions": "INTEGRATION STEPS for the game agent: (1) The library lives in ./output/<category>/<filename>.wav \u2014 133 wavs across 9 category subdirs (weapon, event, ui, alert, game_state, voice, tribe_voice, tribe_super, unit_special). Either point Phaser preloads at output/<category>/ directly, or rsync the contents into ./sounds/ (overwriting the legacy Red Alert wavs). (2) For each event, outputs[].file is the authoritative game-facing path. If an event has multiple outputs they are random variants \u2014 pick one per playback. (3) The `usage` field describes the SoundSystem hook. For status:'existing' events the method already exists; refresh its filename array. For status:'proposed' events follow `usage` \u2014 typical pattern: add a new SoundSystem.play<Foo> method, register the wav(s) in the preload list, and call it at the location named in `usage`. (4) For category:tribe_voice and tribe_super, gate playback on the player faction id; these are per-tribe overrides for the generic commander / super-weapon sounds. (5) Voice files have already been radio-treated; the raw TTS in ./voice/ is intermediate and is NOT needed by the game. Do not bundle ./voice/. (6) Five SFX outputs (4 explosions + lightning_zap) carry a `source` field pointing at the legacy ./sounds/ wav. These are temporary placeholders using the still-copyrighted Red Alert audio \u2014 they sound right but should be swapped before any public release. (7) ./output/attribution.json is the per-sample Freesound credit ledger. ./output/CREDITS.md is the human-readable summary. Bundle CREDITS.md (at minimum the CC-BY entries) before shipping. One sample is CC-BY-NC (non-commercial only) \u2014 see CREDITS.md, replace it for commercial release. (8) After wiring, run `npx tsc --noEmit`; anything left in ./sounds/ that doesn't appear as an outputs[].file in this manifest is an unused Red Alert original and can be deleted.",
+    "schema": {
+      "id": "stable identifier (snake_case).",
+      "status": "'existing' = was in the game already (has a `legacy` Red Alert filename); 'proposed' = new audible event.",
+      "category": "weapon | event | voice | ui | alert | game_state | tribe_super | tribe_voice | unit_special \u2014 also names the output subdir.",
+      "description": "human-readable role of this event.",
+      "usage": "where the sound plays in the game code / which SoundSystem hook owns it.",
+      "outputs": "list of files; multiple entries are random variants the game picks between.",
+      "outputs[*].file": "authoritative game-facing path (./output/<category>/<name>.wav).",
+      "outputs[*].type": "'sfx' | 'tts' | 'alias'.",
+      "outputs[*].legacy": "name of the original Red Alert wav this output replaces (filename mapping for the rename step).",
+      "outputs[*].query": "sfx only: Freesound search keywords used (kept for reproducibility).",
+      "outputs[*].duration_min/max": "sfx only: Freesound duration filter (seconds).",
+      "outputs[*].username": "sfx only: Freesound uploader filter used (when present).",
+      "outputs[*].source": "sfx only: local source file to copy (overrides Freesound; used by the 5 RA placeholders).",
+      "outputs[*].text": "tts only: the spoken text.",
+      "outputs[*].voice": "tts only: key into tts_voices map.",
+      "outputs[*].voice_settings": "tts only: ElevenLabs voice_settings override (optional).",
+      "outputs[*].alias_of": "alias only: another event id whose first output is copied into this file."
+    },
+    "library_summary": {
+      "event_count": 66,
+      "output_count": 133,
+      "events_by_status": {
+        "existing": 30,
+        "proposed": 36
+      },
+      "events_by_category": {
+        "weapon": 7,
+        "event": 15,
+        "ui": 12,
+        "game_state": 4,
+        "voice": 3,
+        "alert": 4,
+        "tribe_super": 8,
+        "tribe_voice": 8,
+        "unit_special": 5
+      },
+      "outputs_by_type": {
+        "sfx": 67,
+        "tts": 63,
+        "alias": 3
+      },
+      "placeholder_count": 5,
+      "all_wavs_present_on_disk": true
+    }
+  },
+  "style_guide": "Sound aesthetic \u2014 early-1990s Westwood Studios Command & Conquer: Red Alert. Punchy, slightly distorted radio-compressed voice lines (radio operator / field commander barking through a tinny radio), explosive booms with prominent low-end and a brief tail of debris rumble, weapons that sound mechanical and weighty. UI clicks should feel like brass-and-CRT-era console blips. Modern fidelity is fine, but the timbre should stay deliberately 1990s in spirit \u2014 slight grit, dry recordings, no modern hyperreal polish.",
+  "tts_voices": {
+    "TROOPER_M_GRUFF": {
+      "voice_id": "pqHfZKP75CvOlQylNhV4",
+      "voice_name": "Bill",
+      "description": "Gruff older male \u2014 gravelly, blunt, a sergeant who's seen too many tours. Default 'rough soldier' bark.",
+      "voice_settings": {
+        "stability": 0.25,
+        "similarity_boost": 0.85,
+        "style": 0.75,
+        "use_speaker_boost": true
+      }
+    },
+    "TROOPER_M_DEEP": {
+      "voice_id": "pNInz6obpgDQGcFmaJgB",
+      "voice_name": "Adam",
+      "description": "Deep American male, low and commanding. The radio-baritone trooper.",
+      "voice_settings": {
+        "stability": 0.3,
+        "similarity_boost": 0.85,
+        "style": 0.65,
+        "use_speaker_boost": true
+      }
+    },
+    "TROOPER_M_AUSSIE": {
+      "voice_id": "IKne3meq5aSn9XLyUdCD",
+      "voice_name": "Charlie",
+      "description": "Australian male, weathered and lively. Adds non-American variety to the pool.",
+      "voice_settings": {
+        "stability": 0.3,
+        "similarity_boost": 0.85,
+        "style": 0.7,
+        "use_speaker_boost": true
+      }
+    },
+    "TROOPER_F_STRONG": {
+      "voice_id": "AZnzlk1XvdvUeBnXmlld",
+      "voice_name": "Domi",
+      "description": "Strong young female \u2014 sharp, confident, not soft. Soldier delivery.",
+      "voice_settings": {
+        "stability": 0.3,
+        "similarity_boost": 0.85,
+        "style": 0.7,
+        "use_speaker_boost": true
+      }
+    },
+    "TROOPER_F_RADIO": {
+      "voice_id": "21m00Tcm4TlvDq8ikWAM",
+      "voice_name": "Rachel",
+      "description": "Crisp female radio operator \u2014 calm, procedural, the voice on the other end of the comm channel.",
+      "voice_settings": {
+        "stability": 0.45,
+        "similarity_boost": 0.85,
+        "style": 0.5,
+        "use_speaker_boost": true
+      }
+    },
+    "FORGEBORN_FOREMAN": {
+      "voice_id": "JBFqnCBsd6RMkjVDRZzb",
+      "voice_name": "George",
+      "description": "Steel-mill foreman, older male, low and gravelly with industrial weight. The Forgeborn tribal voice.",
+      "voice_settings": {
+        "stability": 0.35,
+        "similarity_boost": 0.85,
+        "style": 0.5,
+        "use_speaker_boost": true
+      }
+    },
+    "AURUM_TEMPLAR": {
+      "voice_id": "onwK4e9ZLuTAKqWW03F9",
+      "voice_name": "Daniel",
+      "description": "British male, solemn and ceremonial, paladin/templar diction. The Aurum tribal voice \u2014 measured rather than shouted.",
+      "voice_settings": {
+        "stability": 0.6,
+        "similarity_boost": 0.85,
+        "style": 0.35,
+        "use_speaker_boost": true
+      }
+    },
+    "SKYFORCE_PILOT": {
+      "voice_id": "nPczCjzI2devNBz1zQrb",
+      "voice_name": "Brian",
+      "description": "Crisp middle-aged male pilot voice, radio-procedural cadence. The Skyforce tribal voice.",
+      "voice_settings": {
+        "stability": 0.45,
+        "similarity_boost": 0.85,
+        "style": 0.45,
+        "use_speaker_boost": true
+      }
+    },
+    "BLOODHOUND_ZEALOT": {
+      "voice_id": "yoZ06aMxZJJ28mfd3POQ",
+      "voice_name": "Sam",
+      "description": "Raspy male zealot, almost feral, shouting. The Bloodhound tribal voice.",
+      "voice_settings": {
+        "stability": 0.25,
+        "similarity_boost": 0.85,
+        "style": 0.75,
+        "use_speaker_boost": true
+      }
+    },
+    "THORNWOOD_SPIRIT": {
+      "voice_id": "XrExE9yKIg1WjnnlVkGX",
+      "voice_name": "Matilda",
+      "description": "Warm female with a hushed, almost whispered delivery. The Thornwood forest-spirit voice.",
+      "voice_settings": {
+        "stability": 0.55,
+        "similarity_boost": 0.8,
+        "style": 0.4,
+        "use_speaker_boost": false
+      }
+    },
+    "WRAITH_WHISPER": {
+      "voice_id": "TX3LPaxmHKxFdv7VOQHJ",
+      "voice_name": "Liam",
+      "description": "Young male, conspiratorial whisper, sibilant and dry. The Wraith tribal voice \u2014 uncomfortably intimate.",
+      "voice_settings": {
+        "stability": 0.6,
+        "similarity_boost": 0.8,
+        "style": 0.5,
+        "use_speaker_boost": false
+      }
+    },
+    "VEXKIN_CHITTER": {
+      "voice_id": "ErXwobaYiN019PkySvjV",
+      "voice_name": "Antoni",
+      "description": "Well-rounded male, used here for clipped chitter-like deliveries with sibilant edges. The Vexkin tribal voice \u2014 meant to feel barely human.",
+      "voice_settings": {
+        "stability": 0.3,
+        "similarity_boost": 0.75,
+        "style": 0.8,
+        "use_speaker_boost": true
+      }
+    },
+    "SYMBIONT_HIVE": {
+      "voice_id": "EXAVITQu4vr4xnSDxMaL",
+      "voice_name": "Bella",
+      "description": "Soft female, used for wet biological hive-mind deliveries. The Symbiont tribal voice \u2014 single voice now, can be doubled in post for the layered feel.",
+      "voice_settings": {
+        "stability": 0.4,
+        "similarity_boost": 0.8,
+        "style": 0.55,
+        "use_speaker_boost": false
+      }
+    }
+  },
+  "events": [
+    {
+      "id": "rifle_fire",
+      "status": "existing",
+      "category": "weapon",
+      "description": "Single sharp infantry rifle crack, dry muzzle pop with brief metallic ping, almost no tail.",
+      "usage": "SoundSystem.playFireSound('rifle') \u2014 fired per shot by infantry units in CombatSystem.fireProjectile.",
+      "outputs": [
+        {
+          "file": "./output/weapon/rifle_fire.wav",
+          "type": "sfx",
+          "legacy": "gun5.wav",
+          "query": "rifle gunshot",
+          "duration_min": 0.2,
+          "duration_max": 1.5
+        }
+      ]
+    },
+    {
+      "id": "mg_fire",
+      "status": "existing",
+      "category": "weapon",
+      "description": "Stuttering belt-fed machine-gun burst, several rapid metallic cracks with a slight echo.",
+      "usage": "SoundSystem.playFireSound('mg') \u2014 machine-gun infantry / light-MG turrets in CombatSystem.fireProjectile.",
+      "outputs": [
+        {
+          "file": "./output/weapon/mg_fire_1.wav",
+          "type": "sfx",
+          "legacy": "mguninf1.wav",
+          "query": "machine gun",
+          "duration_min": 0.4,
+          "duration_max": 1.5
+        },
+        {
+          "file": "./output/weapon/mg_fire_2.wav",
+          "type": "sfx",
+          "legacy": "gun11.wav",
+          "query": "rifle automatic",
+          "duration_min": 0.4,
+          "duration_max": 1.5
+        }
+      ]
+    },
+    {
+      "id": "pillbox_fire",
+      "status": "existing",
+      "category": "weapon",
+      "description": "Fortified bunker-mounted gun firing from inside a concrete embrasure \u2014 muffled crack with low boxed-in resonance.",
+      "usage": "SoundSystem.playFireSound('pillbox') \u2014 pillbox-style static defenses when engaging.",
+      "outputs": [
+        {
+          "file": "./output/weapon/pillbox_fire.wav",
+          "type": "sfx",
+          "legacy": "pillbox1.wav",
+          "query": "heavy machine gun",
+          "duration_min": 0.4,
+          "duration_max": 1.5
+        }
+      ]
+    },
+    {
+      "id": "cannon_fire",
+      "status": "existing",
+      "category": "weapon",
+      "description": "Tank main cannon firing \u2014 deep low boom with a metallic crack on the attack and a short ringing decay; shared by tanks (full volume) and defensive turrets (attenuated).",
+      "usage": "SoundSystem.playFireSound('cannon' / 'turret') \u2014 Forgeborn tanks and most defensive turrets in CombatSystem.fireProjectile.",
+      "outputs": [
+        {
+          "file": "./output/weapon/cannon_fire_2.wav",
+          "type": "sfx",
+          "legacy": "cannon2.wav",
+          "query": "howitzer",
+          "duration_min": 0.5,
+          "duration_max": 2.0
+        }
+      ]
+    },
+    {
+      "id": "heavy_cannon_fire",
+      "status": "existing",
+      "category": "weapon",
+      "description": "Heavy siege artillery / mortar firing \u2014 very deep concussive boom with a thump that drops into a long rumble.",
+      "usage": "SoundSystem.playFireSound('heavyCannon') \u2014 Forgeborn Siege Works artillery in CombatSystem.fireProjectile.",
+      "outputs": [
+        {
+          "file": "./output/weapon/heavy_cannon_fire.wav",
+          "type": "sfx",
+          "legacy": "turret1.wav",
+          "query": "howitzer firing",
+          "duration_min": 0.8,
+          "duration_max": 2.5
+        }
+      ]
+    },
+    {
+      "id": "silenced_fire",
+      "status": "existing",
+      "category": "weapon",
+      "description": "Suppressed sniper rifle \u2014 soft muffled pop with a thin metallic action click, almost no report.",
+      "usage": "SoundSystem.playFireSound('silenced') \u2014 stealth/scout units (e.g. Wraith snipers) in CombatSystem.fireProjectile.",
+      "outputs": [
+        {
+          "file": "./output/weapon/silenced_fire.wav",
+          "type": "sfx",
+          "legacy": "silencer.wav",
+          "query": "pistol shot",
+          "duration_min": 0.2,
+          "duration_max": 1.0
+        }
+      ]
+    },
+    {
+      "id": "unit_squish",
+      "status": "existing",
+      "category": "event",
+      "description": "Infantry crushed under a vehicle tread \u2014 wet sickly squish with a low bone crunch and a brief metallic scrape.",
+      "usage": "SoundSystem.playSquish \u2014 CombatSystem when a vehicle drives over and crushes an infantry unit.",
+      "outputs": [
+        {
+          "file": "./output/event/unit_squish.wav",
+          "type": "sfx",
+          "legacy": "squishy2.wav",
+          "query": "gore impact",
+          "duration_min": 0.3,
+          "duration_max": 1.2
+        }
+      ]
+    },
+    {
+      "id": "explosion_small",
+      "status": "existing",
+      "category": "event",
+      "description": "Small unit-destruction explosion \u2014 sharp crack, brief fireball whoosh, short low rumble tail.",
+      "usage": "SoundSystem.playExplosionSmall \u2014 CombatSystem when a non-infantry unit dies.",
+      "outputs": [
+        {
+          "file": "./output/event/explosion_small_1.wav",
+          "type": "sfx",
+          "legacy": "kaboom1.wav",
+          "source": "./sounds/kaboom1.wav"
+        },
+        {
+          "file": "./output/event/explosion_small_2.wav",
+          "type": "sfx",
+          "legacy": "kaboom12.wav",
+          "query": "bomb",
+          "duration_min": 0.4,
+          "duration_max": 1.8,
+          "username": "qubodup"
+        },
+        {
+          "file": "./output/event/explosion_small_3.wav",
+          "type": "sfx",
+          "legacy": "kaboom25.wav",
+          "source": "./sounds/kaboom25.wav"
+        }
+      ]
+    },
+    {
+      "id": "explosion_large",
+      "status": "existing",
+      "category": "event",
+      "description": "Large building-destruction explosion \u2014 heavy concussive boom with deep low thump, mid-range fire crackle, long debris-rumble tail.",
+      "usage": "SoundSystem.playExplosionLarge \u2014 GameScene when a building is destroyed.",
+      "outputs": [
+        {
+          "file": "./output/event/explosion_large_1.wav",
+          "type": "sfx",
+          "legacy": "kaboom15.wav",
+          "source": "./sounds/kaboom15.wav"
+        },
+        {
+          "file": "./output/event/explosion_large_2.wav",
+          "type": "sfx",
+          "legacy": "kaboom22.wav",
+          "source": "./sounds/kaboom22.wav"
+        },
+        {
+          "file": "./output/event/explosion_large_3.wav",
+          "type": "sfx",
+          "legacy": "kaboom30.wav",
+          "query": "explosion large",
+          "duration_min": 0.8,
+          "duration_max": 3.0,
+          "username": "qubodup"
+        }
+      ]
+    },
+    {
+      "id": "building_placement",
+      "status": "existing",
+      "category": "event",
+      "description": "Construction begins \u2014 dirt and dust settling, wooden / metal scaffold staked into the ground, brief mechanical clank.",
+      "usage": "SoundSystem.playBuild \u2014 GameScene.spawnBuilding.",
+      "outputs": [
+        {
+          "file": "./output/event/building_placement.wav",
+          "type": "sfx",
+          "legacy": "placbldg.wav",
+          "query": "metal thud drop",
+          "duration_min": 0.4,
+          "duration_max": 1.5
+        }
+      ]
+    },
+    {
+      "id": "building_complete",
+      "status": "existing",
+      "category": "event",
+      "description": "Construction finished \u2014 confident affirmative chime, two-tone rising mechanical ping with a faint warm hum, satisfying completion cue.",
+      "usage": "SoundSystem.playBuildComplete \u2014 fires 900 ms after building_placement.",
+      "outputs": [
+        {
+          "file": "./output/event/building_complete.wav",
+          "type": "sfx",
+          "legacy": "build5.wav",
+          "query": "completion chime",
+          "duration_min": 0.5,
+          "duration_max": 2.5
+        }
+      ]
+    },
+    {
+      "id": "symbiont_fusion",
+      "status": "existing",
+      "category": "event",
+      "description": "Two organic units merging \u2014 warbling chrono-style warp, ascending shimmer with a wet biological undertone, brief and otherworldly.",
+      "usage": "SoundSystem.playFusion \u2014 GameScene when two Symbiont units merge.",
+      "outputs": [
+        {
+          "file": "./output/event/symbiont_fusion_1.wav",
+          "type": "sfx",
+          "legacy": "chrotnk1.wav",
+          "query": "teleport",
+          "duration_min": 0.8,
+          "duration_max": 3.0
+        },
+        {
+          "file": "./output/event/symbiont_fusion_2.wav",
+          "type": "sfx",
+          "legacy": "chrono2.wav",
+          "query": "shimmer",
+          "duration_min": 0.5,
+          "duration_max": 1.5
+        }
+      ]
+    },
+    {
+      "id": "crystal_deposit",
+      "status": "existing",
+      "category": "event",
+      "description": "Harvester unloads crystals at the refinery \u2014 bright cash-register-style chime with a clean metallic clink, rewarding.",
+      "usage": "SoundSystem.playCrystalDeposit \u2014 fires when any harvester deposits crystals.",
+      "outputs": [
+        {
+          "file": "./output/event/crystal_deposit.wav",
+          "type": "sfx",
+          "legacy": "cashup1.wav",
+          "query": "glass chime",
+          "duration_min": 0.1,
+          "duration_max": 1.0
+        }
+      ]
+    },
+    {
+      "id": "level_up",
+      "status": "existing",
+      "category": "ui",
+      "description": "Player level-up fanfare \u2014 ascending four-note chime, clean bell-like tones, brief and triumphant.",
+      "usage": "SoundSystem.playLevelUp \u2014 GameScene when the player gains a perk level.",
+      "outputs": [
+        {
+          "file": "./output/ui/level_up.wav",
+          "type": "sfx",
+          "legacy": "hydrod1.wav",
+          "query": "powerup",
+          "duration_min": 0.5,
+          "duration_max": 1.8
+        }
+      ]
+    },
+    {
+      "id": "heal_pulse",
+      "status": "existing",
+      "category": "event",
+      "description": "Soft healing chime \u2014 gentle warm sine tone with a brief bell-like shimmer, quiet and reassuring, very short tail.",
+      "usage": "SoundSystem.playHeal \u2014 clinic / healing radius touches a unit; also Aurum Sanctuary Pulse super via playSuperEcho.",
+      "outputs": [
+        {
+          "file": "./output/event/heal_pulse.wav",
+          "type": "sfx",
+          "legacy": "heal2.wav",
+          "query": "magic chime",
+          "duration_min": 0.3,
+          "duration_max": 1.5
+        }
+      ]
+    },
+    {
+      "id": "ui_click",
+      "status": "existing",
+      "category": "ui",
+      "description": "UI button click \u2014 crisp short menu blip, slight digital chirp, no tail.",
+      "usage": "SoundSystem.playClick \u2014 every button press in MenuScene and most in-game HUD buttons.",
+      "outputs": [
+        {
+          "file": "./output/ui/ui_click.wav",
+          "type": "sfx",
+          "legacy": "ramenu1.wav",
+          "query": "ui click",
+          "duration_min": 0.05,
+          "duration_max": 0.5
+        }
+      ]
+    },
+    {
+      "id": "victory_fanfare",
+      "status": "existing",
+      "category": "game_state",
+      "description": "Victory chime \u2014 ascending major-key four-note fanfare, bright sine tones with a hint of brass, triumphant.",
+      "usage": "SoundSystem.playVictory \u2014 GameScene.endMatch on win.",
+      "outputs": [
+        {
+          "file": "./output/game_state/victory_fanfare.wav",
+          "type": "sfx",
+          "legacy": null,
+          "query": "victory fanfare",
+          "duration_min": 1.0,
+          "duration_max": 3.0
+        }
+      ]
+    },
+    {
+      "id": "defeat",
+      "status": "existing",
+      "category": "game_state",
+      "description": "Defeat / mission failed \u2014 descending minor-key tones, low mournful warble like a radar powering down into silence.",
+      "usage": "SoundSystem.playDefeat \u2014 GameScene.endMatch on loss.",
+      "outputs": [
+        {
+          "file": "./output/game_state/defeat.wav",
+          "type": "sfx",
+          "legacy": "radardn1.wav",
+          "query": "wah wah",
+          "duration_min": 0.8,
+          "duration_max": 3.0
+        }
+      ]
+    },
+    {
+      "id": "commander_move_ack",
+      "status": "existing",
+      "category": "voice",
+      "description": "Commander voice line \u2014 short shouted military bark acknowledging a move order, gritty radio-compressed delivery.",
+      "usage": "SoundSystem.playCommanderMove \u2014 issued on move/rally orders, throttled ~once / 2.2 s. Game picks one variant at random.",
+      "outputs": [
+        {
+          "file": "./output/voice/voice_commander_move_lets_roll.wav",
+          "type": "tts",
+          "voice": "TROOPER_M_GRUFF",
+          "text": "Let's roll!",
+          "legacy": "rokroll1.wav"
+        },
+        {
+          "file": "./output/voice/voice_commander_move_on_it.wav",
+          "type": "tts",
+          "voice": "TROOPER_M_DEEP",
+          "text": "On it!",
+          "legacy": "onit1.wav"
+        },
+        {
+          "file": "./output/voice/voice_commander_move_yes_sir.wav",
+          "type": "tts",
+          "voice": "TROOPER_F_STRONG",
+          "text": "Yes, sir!",
+          "legacy": "maffirm1.wav"
+        },
+        {
+          "file": "./output/voice/voice_commander_move_movin_out.wav",
+          "type": "tts",
+          "voice": "TROOPER_M_AUSSIE",
+          "text": "Movin' out!",
+          "legacy": "mmovout1.wav"
+        },
+        {
+          "file": "./output/voice/voice_commander_move_affirmative.wav",
+          "type": "tts",
+          "voice": "TROOPER_F_RADIO",
+          "text": "Affirmative.",
+          "legacy": "eaffirm1.wav"
+        },
+        {
+          "file": "./output/voice/voice_commander_move_hoo_ah.wav",
+          "type": "tts",
+          "voice": "TROOPER_M_GRUFF",
+          "text": "Hoo-ah!",
+          "legacy": "yo1.wav"
+        },
+        {
+          "file": "./output/voice/voice_commander_move_yeah.wav",
+          "type": "tts",
+          "voice": "TROOPER_M_DEEP",
+          "text": "Yeah!",
+          "legacy": "yeah1.wav"
+        },
+        {
+          "file": "./output/voice/voice_commander_move_cmon.wav",
+          "type": "tts",
+          "voice": "TROOPER_F_STRONG",
+          "text": "C'mon!",
+          "legacy": "cmon1.wav"
+        },
+        {
+          "file": "./output/voice/voice_commander_move_roger.wav",
+          "type": "tts",
+          "voice": "TROOPER_F_RADIO",
+          "text": "Roger that.",
+          "legacy": "emovout1.wav"
+        }
+      ]
+    },
+    {
+      "id": "commander_build_ack",
+      "status": "existing",
+      "category": "voice",
+      "description": "Engineer voice line \u2014 enthusiastic blue-collar shout acknowledging a build order, radio-compressed.",
+      "usage": "SoundSystem.playCommanderBuild \u2014 GameScene.spawnBuilding, throttled ~once / 3 s.",
+      "outputs": [
+        {
+          "file": "./output/voice/voice_commander_build_got_it.wav",
+          "type": "tts",
+          "voice": "TROOPER_F_STRONG",
+          "text": "Got it!",
+          "legacy": "gotit1.wav"
+        },
+        {
+          "file": "./output/voice/voice_commander_build_hot_diggity.wav",
+          "type": "tts",
+          "voice": "TROOPER_M_AUSSIE",
+          "text": "Hot diggity!",
+          "legacy": "mhotdig1.wav"
+        },
+        {
+          "file": "./output/voice/voice_commander_build_yes.wav",
+          "type": "tts",
+          "voice": "TROOPER_M_GRUFF",
+          "text": "Yes!",
+          "legacy": "myes1.wav"
+        },
+        {
+          "file": "./output/voice/voice_commander_build_yeehaw.wav",
+          "type": "tts",
+          "voice": "TROOPER_M_AUSSIE",
+          "text": "Yee-haw!",
+          "legacy": "myeehaw1.wav"
+        },
+        {
+          "file": "./output/voice/voice_commander_build_wrench_it.wav",
+          "type": "tts",
+          "voice": "TROOPER_M_DEEP",
+          "text": "Wrench it!",
+          "legacy": "mwrench1.wav"
+        },
+        {
+          "file": "./output/voice/voice_commander_build_rise.wav",
+          "type": "tts",
+          "voice": "TROOPER_F_RADIO",
+          "text": "She's risin'!",
+          "legacy": "mrise1.wav"
+        }
+      ]
+    },
+    {
+      "id": "unit_death",
+      "status": "existing",
+      "category": "voice",
+      "description": "Infantry soldier dying \u2014 non-verbal pained male death scream / grunt / choked gasp, several variants.",
+      "usage": "SoundSystem.playUnitDeath \u2014 CombatSystem on infantry death. Game picks a variant at random.",
+      "outputs": [
+        {
+          "file": "./output/voice/unit_death_1.wav",
+          "type": "sfx",
+          "legacy": "dedman1.wav",
+          "query": "male death scream",
+          "duration_min": 0.3,
+          "duration_max": 1.5
+        },
+        {
+          "file": "./output/voice/unit_death_2.wav",
+          "type": "sfx",
+          "legacy": "dedman2.wav",
+          "query": "male death scream",
+          "duration_min": 0.3,
+          "duration_max": 1.5
+        },
+        {
+          "file": "./output/voice/unit_death_3.wav",
+          "type": "sfx",
+          "legacy": "dedman3.wav",
+          "query": "male death scream",
+          "duration_min": 0.3,
+          "duration_max": 1.5
+        },
+        {
+          "file": "./output/voice/unit_death_4.wav",
+          "type": "sfx",
+          "legacy": "dedman4.wav",
+          "query": "male death scream",
+          "duration_min": 0.3,
+          "duration_max": 1.5
+        },
+        {
+          "file": "./output/voice/unit_death_5.wav",
+          "type": "sfx",
+          "legacy": "dedman5.wav",
+          "query": "male death scream",
+          "duration_min": 0.3,
+          "duration_max": 1.5
+        },
+        {
+          "file": "./output/voice/unit_death_6.wav",
+          "type": "sfx",
+          "legacy": "dedman7.wav",
+          "query": "male death scream",
+          "duration_min": 0.3,
+          "duration_max": 1.5
+        },
+        {
+          "file": "./output/voice/unit_death_7.wav",
+          "type": "sfx",
+          "legacy": "dedman8.wav",
+          "query": "male death scream",
+          "duration_min": 0.3,
+          "duration_max": 1.5
+        }
+      ]
+    },
+    {
+      "id": "lightning_zap",
+      "status": "existing",
+      "category": "event",
+      "description": "High-voltage electrical arc \u2014 sharp crackling snap, quick electric whip of static, fizzling decay.",
+      "usage": "SoundSystem.playLightning \u2014 tesla-coil attacks, chain lightning, Skyforce Lightning Storm super.",
+      "outputs": [
+        {
+          "file": "./output/event/lightning_zap.wav",
+          "type": "sfx",
+          "legacy": "tesla1.wav",
+          "source": "./sounds/tesla1.wav"
+        }
+      ]
+    },
+    {
+      "id": "reaver_impact",
+      "status": "existing",
+      "category": "event",
+      "description": "Kamikaze landmine-style detonation \u2014 sharp crack, tight high-pressure pop, brief metallic shrapnel rattle, no long tail.",
+      "usage": "SoundSystem.playReaverImpact \u2014 Bloodhound Reaver suicide impact.",
+      "outputs": [
+        {
+          "file": "./output/event/reaver_impact_1.wav",
+          "type": "sfx",
+          "legacy": "mineblo1.wav",
+          "query": "mine explosion",
+          "duration_min": 0.4,
+          "duration_max": 1.5
+        }
+      ]
+    },
+    {
+      "id": "tribe_eliminated",
+      "status": "existing",
+      "category": "game_state",
+      "description": "Entire faction destroyed \u2014 heavy structural crumble, walls collapsing, deep thump and long debris rumble.",
+      "usage": "SoundSystem.playTribeEliminated \u2014 entire faction loses its last building / commander.",
+      "outputs": [
+        {
+          "file": "./output/game_state/tribe_eliminated.wav",
+          "type": "sfx",
+          "legacy": "crmble2.wav",
+          "query": "lose",
+          "duration_min": 0.8,
+          "duration_max": 3.0
+        }
+      ]
+    },
+    {
+      "id": "frost_pulse",
+      "status": "existing",
+      "category": "event",
+      "description": "Deep-freeze area pulse \u2014 ascending icy shimmer, crystalline whoosh with a faint sub-zero crack, otherworldly cold.",
+      "usage": "SoundSystem.playFrost \u2014 Thornwood Deep Freeze super impact.",
+      "outputs": [
+        {
+          "file": "./output/event/frost_pulse.wav",
+          "type": "sfx",
+          "legacy": "chrono2.wav",
+          "query": "ice magic",
+          "duration_min": 0.8,
+          "duration_max": 3.0
+        }
+      ]
+    },
+    {
+      "id": "splash_impact",
+      "status": "existing",
+      "category": "event",
+      "description": "Fiery splash-damage detonation \u2014 whooshing fireball, mid-range crackle with a low thump, brief sustained heat hiss.",
+      "usage": "SoundSystem.playSplash \u2014 splash projectiles (artillery, rocket, AoE) and several super-weapons.",
+      "outputs": [
+        {
+          "file": "./output/event/splash_impact.wav",
+          "type": "sfx",
+          "legacy": "firebl3.wav",
+          "query": "fireball explosion",
+          "duration_min": 0.4,
+          "duration_max": 2.0
+        }
+      ]
+    },
+    {
+      "id": "radar_on",
+      "status": "existing",
+      "category": "ui",
+      "description": "Radar / scanner powering on \u2014 rising mechanical whine with a confirming digital chirp, electronics warming up.",
+      "usage": "SoundSystem.playRadarOn \u2014 GameScene when the player finishes a radar / minimap structure.",
+      "outputs": [
+        {
+          "file": "./output/ui/radar_on.wav",
+          "type": "sfx",
+          "legacy": "radaron2.wav",
+          "query": "radar beep",
+          "duration_min": 0.8,
+          "duration_max": 2.5
+        }
+      ]
+    },
+    {
+      "id": "base_under_attack_alert",
+      "status": "existing",
+      "category": "alert",
+      "description": "Base-under-attack siren \u2014 buzzing two-tone alarm, urgent and slightly distorted.",
+      "usage": "SoundSystem.playAlert \u2014 any player building takes damage (internal cooldown).",
+      "outputs": [
+        {
+          "file": "./output/alert/base_under_attack_alert.wav",
+          "type": "sfx",
+          "legacy": "buzzy1.wav",
+          "query": "alarm siren",
+          "duration_min": 0.5,
+          "duration_max": 2.5
+        }
+      ]
+    },
+    {
+      "id": "game_start",
+      "status": "existing",
+      "category": "game_state",
+      "description": "Match launch cue \u2014 short bright digital bleep or rising radar power-on chirp, anticipatory.",
+      "usage": "SoundSystem.playGameStart \u2014 MenuScene 'Launch' click.",
+      "outputs": [
+        {
+          "file": "./output/game_state/game_start_1.wav",
+          "type": "sfx",
+          "legacy": "bleep9.wav",
+          "query": "ui beep",
+          "duration_min": 0.3,
+          "duration_max": 1.5
+        },
+        {
+          "file": "./output/game_state/game_start_2.wav",
+          "type": "sfx",
+          "legacy": "radaron2.wav",
+          "query": "startup chime",
+          "duration_min": 0.4,
+          "duration_max": 2.0
+        }
+      ]
+    },
+    {
+      "id": "forgeborn_super_nuke_impact",
+      "status": "proposed",
+      "category": "tribe_super",
+      "description": "Forgeborn Tactical Nuke detonation \u2014 distinctly atomic, longer and heavier than the generic large explosion.",
+      "usage": "Add SoundSystem.playNukeImpact; call instead of playExplosionLarge at the Forgeborn nuke super-weapon impact site in CombatSystem.",
+      "outputs": [
+        {
+          "file": "./output/tribe_super/forgeborn_super_nuke_impact.wav",
+          "type": "sfx",
+          "query": "nuclear blast",
+          "duration_min": 2.5,
+          "duration_max": 5.0
+        }
+      ]
+    },
+    {
+      "id": "aurum_super_sanctuary_pulse",
+      "status": "proposed",
+      "category": "tribe_super",
+      "description": "Aurum Sanctuary Pulse \u2014 wide cathedral organ chord swelling outward with choir 'aaah', sacred and protective.",
+      "usage": "Replace playHeal in the Aurum super-weapon dispatch path.",
+      "outputs": [
+        {
+          "file": "./output/tribe_super/aurum_super_sanctuary_pulse.wav",
+          "type": "sfx",
+          "query": "choir",
+          "duration_min": 2.0,
+          "duration_max": 6.0
+        }
+      ]
+    },
+    {
+      "id": "skyforce_super_lightning_storm",
+      "status": "proposed",
+      "category": "tribe_super",
+      "description": "Skyforce Lightning Storm \u2014 extended thunderclap with multiple staggered strikes, deep rolling thunder.",
+      "usage": "Replace playLightning in the Skyforce super-weapon dispatch.",
+      "outputs": [
+        {
+          "file": "./output/tribe_super/skyforce_super_lightning_storm.wav",
+          "type": "sfx",
+          "query": "thunder strike",
+          "duration_min": 2.0,
+          "duration_max": 5.0
+        }
+      ]
+    },
+    {
+      "id": "bloodhound_super_blood_frenzy",
+      "status": "proposed",
+      "category": "tribe_super",
+      "description": "Bloodhound Blood Frenzy \u2014 howling and snarling hounds layered with a slow heavy heartbeat, wet meaty undertone.",
+      "usage": "Replace the current generic SFX in the Bloodhound super-weapon dispatch.",
+      "outputs": [
+        {
+          "file": "./output/tribe_super/bloodhound_super_blood_frenzy.wav",
+          "type": "sfx",
+          "query": "wolves howling",
+          "duration_min": 2.0,
+          "duration_max": 5.0
+        }
+      ]
+    },
+    {
+      "id": "thornwood_super_deep_freeze",
+      "status": "proposed",
+      "category": "tribe_super",
+      "description": "Thornwood Deep Freeze \u2014 ascending arctic wind into vast crystalline ice cracking, faint distant wolf howl.",
+      "usage": "Replace playFrost in the Thornwood super-weapon dispatch.",
+      "outputs": [
+        {
+          "file": "./output/tribe_super/thornwood_super_deep_freeze.wav",
+          "type": "alias",
+          "alias_of": "frost_pulse"
+        }
+      ]
+    },
+    {
+      "id": "wraith_super_poison_cloud",
+      "status": "proposed",
+      "category": "tribe_super",
+      "description": "Wraith Poison Cloud \u2014 long sinister snake-hiss with faint sickly bubbling, slowly fading.",
+      "usage": "Replace the generic splash sound in the Wraith super-weapon dispatch.",
+      "outputs": [
+        {
+          "file": "./output/tribe_super/wraith_super_poison_cloud.wav",
+          "type": "sfx",
+          "query": "snake hiss",
+          "duration_min": 2.0,
+          "duration_max": 6.0
+        }
+      ]
+    },
+    {
+      "id": "vexkin_super_wasp_storm",
+      "status": "proposed",
+      "category": "tribe_super",
+      "description": "Vexkin Wasp Storm \u2014 overwhelming high-frequency wing buzz mounting in pitch, faint angry chitters, sharp collective snap.",
+      "usage": "Replace the generic splash sound used for the Vexkin super-weapon.",
+      "outputs": [
+        {
+          "file": "./output/tribe_super/vexkin_super_wasp_storm.wav",
+          "type": "sfx",
+          "query": "swarm bees",
+          "duration_min": 2.0,
+          "duration_max": 5.0
+        }
+      ]
+    },
+    {
+      "id": "symbiont_super_genome_burst",
+      "status": "proposed",
+      "category": "tribe_super",
+      "description": "Symbiont Genome Burst \u2014 wet biological heart-squeeze pulse with rising tonal tissue-growth shimmer.",
+      "usage": "Replace the generic heal/splash sound in the Symbiont super-weapon dispatch.",
+      "outputs": [
+        {
+          "file": "./output/tribe_super/symbiont_super_genome_burst.wav",
+          "type": "sfx",
+          "query": "alien pulse",
+          "duration_min": 2.0,
+          "duration_max": 5.0
+        }
+      ]
+    },
+    {
+      "id": "forgeborn_voice_pack",
+      "status": "proposed",
+      "category": "tribe_voice",
+      "description": "Forgeborn tribe voice pack \u2014 gruff foundry-foreman voice, blue-collar steel-mill cadence.",
+      "usage": "Per-tribe override of commander_move_ack / commander_build_ack when the player is Forgeborn.",
+      "outputs": [
+        {
+          "file": "./output/tribe_voice/voice_forgeborn_move_irons_hot.wav",
+          "type": "tts",
+          "voice": "FORGEBORN_FOREMAN",
+          "text": "Iron's hot!"
+        },
+        {
+          "file": "./output/tribe_voice/voice_forgeborn_move_on_the_march.wav",
+          "type": "tts",
+          "voice": "FORGEBORN_FOREMAN",
+          "text": "On the march."
+        },
+        {
+          "file": "./output/tribe_voice/voice_forgeborn_move_movin_out.wav",
+          "type": "tts",
+          "voice": "FORGEBORN_FOREMAN",
+          "text": "Movin' out!"
+        },
+        {
+          "file": "./output/tribe_voice/voice_forgeborn_build_forge_it.wav",
+          "type": "tts",
+          "voice": "FORGEBORN_FOREMAN",
+          "text": "Forge it!"
+        },
+        {
+          "file": "./output/tribe_voice/voice_forgeborn_build_stoke_fires.wav",
+          "type": "tts",
+          "voice": "FORGEBORN_FOREMAN",
+          "text": "Stoke the fires!"
+        },
+        {
+          "file": "./output/tribe_voice/voice_forgeborn_build_anvil_ready.wav",
+          "type": "tts",
+          "voice": "FORGEBORN_FOREMAN",
+          "text": "Anvil's ready."
+        }
+      ]
+    },
+    {
+      "id": "aurum_voice_pack",
+      "status": "proposed",
+      "category": "tribe_voice",
+      "description": "Aurum tribe voice pack \u2014 solemn male templar / paladin voice, slow and ceremonial.",
+      "usage": "Per-tribe override when the player is Aurum.",
+      "outputs": [
+        {
+          "file": "./output/tribe_voice/voice_aurum_move_by_the_light.wav",
+          "type": "tts",
+          "voice": "AURUM_TEMPLAR",
+          "text": "By the light."
+        },
+        {
+          "file": "./output/tribe_voice/voice_aurum_move_we_march.wav",
+          "type": "tts",
+          "voice": "AURUM_TEMPLAR",
+          "text": "We march."
+        },
+        {
+          "file": "./output/tribe_voice/voice_aurum_move_for_the_order.wav",
+          "type": "tts",
+          "voice": "AURUM_TEMPLAR",
+          "text": "For the order."
+        },
+        {
+          "file": "./output/tribe_voice/voice_aurum_build_sanctum_rises.wav",
+          "type": "tts",
+          "voice": "AURUM_TEMPLAR",
+          "text": "The sanctum rises."
+        },
+        {
+          "file": "./output/tribe_voice/voice_aurum_build_blessed_be.wav",
+          "type": "tts",
+          "voice": "AURUM_TEMPLAR",
+          "text": "Blessed be."
+        },
+        {
+          "file": "./output/tribe_voice/voice_aurum_build_it_is_done.wav",
+          "type": "tts",
+          "voice": "AURUM_TEMPLAR",
+          "text": "It is done."
+        }
+      ]
+    },
+    {
+      "id": "skyforce_voice_pack",
+      "status": "proposed",
+      "category": "tribe_voice",
+      "description": "Skyforce tribe voice pack \u2014 sharp clipped pilot voice with radio cadence.",
+      "usage": "Per-tribe override when the player is Skyforce.",
+      "outputs": [
+        {
+          "file": "./output/tribe_voice/voice_skyforce_move_wings_up.wav",
+          "type": "tts",
+          "voice": "SKYFORCE_PILOT",
+          "text": "Wings up!"
+        },
+        {
+          "file": "./output/tribe_voice/voice_skyforce_move_bearing_assigned.wav",
+          "type": "tts",
+          "voice": "SKYFORCE_PILOT",
+          "text": "Bearing assigned."
+        },
+        {
+          "file": "./output/tribe_voice/voice_skyforce_move_climbing_now.wav",
+          "type": "tts",
+          "voice": "SKYFORCE_PILOT",
+          "text": "Climbing now."
+        },
+        {
+          "file": "./output/tribe_voice/voice_skyforce_build_roost_ready.wav",
+          "type": "tts",
+          "voice": "SKYFORCE_PILOT",
+          "text": "Roost ready."
+        },
+        {
+          "file": "./output/tribe_voice/voice_skyforce_build_hangar_online.wav",
+          "type": "tts",
+          "voice": "SKYFORCE_PILOT",
+          "text": "Hangar online."
+        },
+        {
+          "file": "./output/tribe_voice/voice_skyforce_build_cleared_takeoff.wav",
+          "type": "tts",
+          "voice": "SKYFORCE_PILOT",
+          "text": "Cleared for takeoff."
+        }
+      ]
+    },
+    {
+      "id": "bloodhound_voice_pack",
+      "status": "proposed",
+      "category": "tribe_voice",
+      "description": "Bloodhound tribe voice pack \u2014 snarling zealot, almost feral.",
+      "usage": "Per-tribe override when the player is Bloodhound.",
+      "outputs": [
+        {
+          "file": "./output/tribe_voice/voice_bloodhound_move_to_the_hunt.wav",
+          "type": "tts",
+          "voice": "BLOODHOUND_ZEALOT",
+          "text": "To the hunt!"
+        },
+        {
+          "file": "./output/tribe_voice/voice_bloodhound_move_run_them_down.wav",
+          "type": "tts",
+          "voice": "BLOODHOUND_ZEALOT",
+          "text": "Run them down!"
+        },
+        {
+          "file": "./output/tribe_voice/voice_bloodhound_move_blood.wav",
+          "type": "tts",
+          "voice": "BLOODHOUND_ZEALOT",
+          "text": "Blood!"
+        },
+        {
+          "file": "./output/tribe_voice/voice_bloodhound_build_lair_grows.wav",
+          "type": "tts",
+          "voice": "BLOODHOUND_ZEALOT",
+          "text": "The lair grows."
+        },
+        {
+          "file": "./output/tribe_voice/voice_bloodhound_build_feast_soon.wav",
+          "type": "tts",
+          "voice": "BLOODHOUND_ZEALOT",
+          "text": "Feast soon."
+        },
+        {
+          "file": "./output/tribe_voice/voice_bloodhound_build_pack_thickens.wav",
+          "type": "tts",
+          "voice": "BLOODHOUND_ZEALOT",
+          "text": "The pack thickens."
+        }
+      ]
+    },
+    {
+      "id": "thornwood_voice_pack",
+      "status": "proposed",
+      "category": "tribe_voice",
+      "description": "Thornwood tribe voice pack \u2014 whispering forest-spirit voice, reverberant.",
+      "usage": "Per-tribe override when the player is Thornwood.",
+      "outputs": [
+        {
+          "file": "./output/tribe_voice/voice_thornwood_move_we_are_wind.wav",
+          "type": "tts",
+          "voice": "THORNWOOD_SPIRIT",
+          "text": "We are wind."
+        },
+        {
+          "file": "./output/tribe_voice/voice_thornwood_move_root_walks.wav",
+          "type": "tts",
+          "voice": "THORNWOOD_SPIRIT",
+          "text": "The root walks."
+        },
+        {
+          "file": "./output/tribe_voice/voice_thornwood_move_through_the_wood.wav",
+          "type": "tts",
+          "voice": "THORNWOOD_SPIRIT",
+          "text": "Through the wood."
+        },
+        {
+          "file": "./output/tribe_voice/voice_thornwood_build_grove_answers.wav",
+          "type": "tts",
+          "voice": "THORNWOOD_SPIRIT",
+          "text": "The grove answers."
+        },
+        {
+          "file": "./output/tribe_voice/voice_thornwood_build_roots_take.wav",
+          "type": "tts",
+          "voice": "THORNWOOD_SPIRIT",
+          "text": "Roots take."
+        },
+        {
+          "file": "./output/tribe_voice/voice_thornwood_build_forest_grows.wav",
+          "type": "tts",
+          "voice": "THORNWOOD_SPIRIT",
+          "text": "The forest grows."
+        }
+      ]
+    },
+    {
+      "id": "wraith_voice_pack",
+      "status": "proposed",
+      "category": "tribe_voice",
+      "description": "Wraith tribe voice pack \u2014 hushed conspiratorial whisper, sibilant.",
+      "usage": "Per-tribe override when the player is Wraith.",
+      "outputs": [
+        {
+          "file": "./output/tribe_voice/voice_wraith_move_unseen.wav",
+          "type": "tts",
+          "voice": "WRAITH_WHISPER",
+          "text": "Unseen."
+        },
+        {
+          "file": "./output/tribe_voice/voice_wraith_move_blink.wav",
+          "type": "tts",
+          "voice": "WRAITH_WHISPER",
+          "text": "Blink."
+        },
+        {
+          "file": "./output/tribe_voice/voice_wraith_move_gone_before.wav",
+          "type": "tts",
+          "voice": "WRAITH_WHISPER",
+          "text": "Gone before they look."
+        },
+        {
+          "file": "./output/tribe_voice/voice_wraith_build_not_here.wav",
+          "type": "tts",
+          "voice": "WRAITH_WHISPER",
+          "text": "It is not here."
+        },
+        {
+          "file": "./output/tribe_voice/voice_wraith_build_door_opens.wav",
+          "type": "tts",
+          "voice": "WRAITH_WHISPER",
+          "text": "A door opens."
+        },
+        {
+          "file": "./output/tribe_voice/voice_wraith_build_veil_thickens.wav",
+          "type": "tts",
+          "voice": "WRAITH_WHISPER",
+          "text": "The veil thickens."
+        }
+      ]
+    },
+    {
+      "id": "vexkin_voice_pack",
+      "status": "proposed",
+      "category": "tribe_voice",
+      "description": "Vexkin tribe voice pack \u2014 chittering near-words, sibilant insect-like.",
+      "usage": "Per-tribe override when the player is Vexkin.",
+      "outputs": [
+        {
+          "file": "./output/tribe_voice/voice_vexkin_move_ssworm.wav",
+          "type": "tts",
+          "voice": "VEXKIN_CHITTER",
+          "text": "Sssworm."
+        },
+        {
+          "file": "./output/tribe_voice/voice_vexkin_move_flyyy.wav",
+          "type": "tts",
+          "voice": "VEXKIN_CHITTER",
+          "text": "Flyyy."
+        },
+        {
+          "file": "./output/tribe_voice/voice_vexkin_move_sting.wav",
+          "type": "tts",
+          "voice": "VEXKIN_CHITTER",
+          "text": "Sting."
+        },
+        {
+          "file": "./output/tribe_voice/voice_vexkin_build_hive_grows.wav",
+          "type": "tts",
+          "voice": "VEXKIN_CHITTER",
+          "text": "Hive grows."
+        },
+        {
+          "file": "./output/tribe_voice/voice_vexkin_build_cells_filled.wav",
+          "type": "tts",
+          "voice": "VEXKIN_CHITTER",
+          "text": "Cells filled."
+        },
+        {
+          "file": "./output/tribe_voice/voice_vexkin_build_queen_pleased.wav",
+          "type": "tts",
+          "voice": "VEXKIN_CHITTER",
+          "text": "Queen pleased."
+        }
+      ]
+    },
+    {
+      "id": "symbiont_voice_pack",
+      "status": "proposed",
+      "category": "tribe_voice",
+      "description": "Symbiont tribe voice pack \u2014 wet biological hive-mind delivery.",
+      "usage": "Per-tribe override when the player is Symbiont.",
+      "outputs": [
+        {
+          "file": "./output/tribe_voice/voice_symbiont_move_we_flow.wav",
+          "type": "tts",
+          "voice": "SYMBIONT_HIVE",
+          "text": "We flow."
+        },
+        {
+          "file": "./output/tribe_voice/voice_symbiont_move_spreading.wav",
+          "type": "tts",
+          "voice": "SYMBIONT_HIVE",
+          "text": "Spreading."
+        },
+        {
+          "file": "./output/tribe_voice/voice_symbiont_move_one.wav",
+          "type": "tts",
+          "voice": "SYMBIONT_HIVE",
+          "text": "One."
+        },
+        {
+          "file": "./output/tribe_voice/voice_symbiont_build_we_split.wav",
+          "type": "tts",
+          "voice": "SYMBIONT_HIVE",
+          "text": "We split."
+        },
+        {
+          "file": "./output/tribe_voice/voice_symbiont_build_cell_ready.wav",
+          "type": "tts",
+          "voice": "SYMBIONT_HIVE",
+          "text": "Cell ready."
+        },
+        {
+          "file": "./output/tribe_voice/voice_symbiont_build_genome_grows.wav",
+          "type": "tts",
+          "voice": "SYMBIONT_HIVE",
+          "text": "Genome grows."
+        }
+      ]
+    },
+    {
+      "id": "super_weapon_ready",
+      "status": "proposed",
+      "category": "ui",
+      "description": "Super-weapon recharged / ready to fire \u2014 authoritative two-tone digital chirp + ready beep.",
+      "usage": "Add playSuperWeaponReady; fire once when any super-weapon cooldown completes for the player.",
+      "outputs": [
+        {
+          "file": "./output/ui/super_weapon_ready.wav",
+          "type": "sfx",
+          "query": "powerup",
+          "duration_min": 0.3,
+          "duration_max": 2.0
+        }
+      ]
+    },
+    {
+      "id": "super_weapon_arming",
+      "status": "proposed",
+      "category": "ui",
+      "description": "Super-weapon arming \u2014 rising capacitor whine ending in a sharp click.",
+      "usage": "Add playSuperWeaponArming; fire when player clicks the super-weapon button to enter target-selection.",
+      "outputs": [
+        {
+          "file": "./output/ui/super_weapon_arming.wav",
+          "type": "sfx",
+          "query": "charge up",
+          "duration_min": 0.4,
+          "duration_max": 2.0
+        }
+      ]
+    },
+    {
+      "id": "building_under_attack",
+      "status": "proposed",
+      "category": "alert",
+      "description": "Single-building distress alert \u2014 softer than the base klaxon, three-pulse bleep over a low warning tone.",
+      "usage": "Add playBuildingDamage (spatial). Replace per-building playAlert calls; keep the base klaxon for commander-on-fire / multi-building emergencies only.",
+      "outputs": [
+        {
+          "file": "./output/alert/building_under_attack.wav",
+          "type": "sfx",
+          "query": "warning beep",
+          "duration_min": 0.4,
+          "duration_max": 2.0
+        }
+      ]
+    },
+    {
+      "id": "unit_selection_click",
+      "status": "proposed",
+      "category": "ui",
+      "description": "Unit / faction selection blip \u2014 distinct from ui_click; lower pitched mechanical click-clack like flipping a toggle.",
+      "usage": "Add playSelect; replace ui_click in spectator follow-faction picker, minimap click, world selection.",
+      "outputs": [
+        {
+          "file": "./output/ui/unit_selection_click.wav",
+          "type": "alias",
+          "alias_of": "ui_click"
+        }
+      ]
+    },
+    {
+      "id": "build_denied",
+      "status": "proposed",
+      "category": "ui",
+      "description": "Build / action denied \u2014 short descending two-note negative buzz, the universal 'no' cue.",
+      "usage": "Add playDenied; fire when an action is rejected (insufficient crystals, cap reached, invalid placement).",
+      "outputs": [
+        {
+          "file": "./output/ui/build_denied.wav",
+          "type": "sfx",
+          "query": "error buzz",
+          "duration_min": 0.1,
+          "duration_max": 0.8
+        }
+      ]
+    },
+    {
+      "id": "tutorial_dialog_appear",
+      "status": "proposed",
+      "category": "ui",
+      "description": "Tutorial / objective dialog appears \u2014 soft warm rising chime, friendly and instructional.",
+      "usage": "Add playTutorialDialog; fire from TutorialController.showDialog.",
+      "outputs": [
+        {
+          "file": "./output/ui/tutorial_dialog_appear.wav",
+          "type": "sfx",
+          "query": "notification chime",
+          "duration_min": 0.3,
+          "duration_max": 1.5
+        }
+      ]
+    },
+    {
+      "id": "tutorial_objective_complete",
+      "status": "proposed",
+      "category": "ui",
+      "description": "Tutorial objective completed \u2014 short bright ascending two-note chime, satisfying.",
+      "usage": "Add playTutorialAdvance; fire on tutorial phase transitions.",
+      "outputs": [
+        {
+          "file": "./output/ui/tutorial_objective_complete.wav",
+          "type": "sfx",
+          "query": "bell ding",
+          "duration_min": 0.3,
+          "duration_max": 1.5
+        }
+      ]
+    },
+    {
+      "id": "spectator_speed_toggle",
+      "status": "proposed",
+      "category": "ui",
+      "description": "Spectator speed-toggle changed \u2014 quick rising digital chirp.",
+      "usage": "Wire into HUD.advanceSpectatorSpeedToggle (currently silent).",
+      "outputs": [
+        {
+          "file": "./output/ui/spectator_speed_toggle.wav",
+          "type": "sfx",
+          "query": "menu beep",
+          "duration_min": 0.05,
+          "duration_max": 0.5
+        }
+      ]
+    },
+    {
+      "id": "reinforcements_arrived",
+      "status": "proposed",
+      "category": "ui",
+      "description": "Reinforcement spawn / bonus units arrived \u2014 radio chirp + brief energetic fanfare snippet.",
+      "usage": "Add playReinforcements; wire to Reinforcements upgrade spawn dispatch.",
+      "outputs": [
+        {
+          "file": "./output/ui/reinforcements_arrived.wav",
+          "type": "sfx",
+          "query": "fanfare",
+          "duration_min": 0.5,
+          "duration_max": 2.5
+        }
+      ]
+    },
+    {
+      "id": "first_contact",
+      "status": "proposed",
+      "category": "ui",
+      "description": "First contact with an enemy tribe \u2014 brief dramatic sting with faint identifier chord, ominous.",
+      "usage": "Add playFirstContact; fire once per enemy tribe per match when first revealed by fog-of-war.",
+      "outputs": [
+        {
+          "file": "./output/ui/first_contact.wav",
+          "type": "sfx",
+          "query": "dramatic sting",
+          "duration_min": 0.5,
+          "duration_max": 2.0
+        }
+      ]
+    },
+    {
+      "id": "minimap_ping",
+      "status": "proposed",
+      "category": "alert",
+      "description": "Minimap ping / generic notification blip \u2014 sonar-style 'tink' with ringing tail.",
+      "usage": "Add playPing; generic ping for minimap events that don't deserve a klaxon.",
+      "outputs": [
+        {
+          "file": "./output/alert/minimap_ping.wav",
+          "type": "sfx",
+          "query": "sonar ping",
+          "duration_min": 0.2,
+          "duration_max": 1.2
+        }
+      ]
+    },
+    {
+      "id": "harvester_pickup",
+      "status": "proposed",
+      "category": "event",
+      "description": "Harvester loading at a crystal field \u2014 faint mechanical clatter with crystalline tinkle.",
+      "usage": "Add playHarvesterPickup (spatial, throttled). Wire at start of crystal-pickup state.",
+      "outputs": [
+        {
+          "file": "./output/event/harvester_pickup.wav",
+          "type": "sfx",
+          "query": "factory loop",
+          "duration_min": 0.5,
+          "duration_max": 2.0
+        }
+      ]
+    },
+    {
+      "id": "crystal_field_depleted",
+      "status": "proposed",
+      "category": "event",
+      "description": "Crystal cluster exhausted \u2014 descending shimmer with final quiet 'tink'.",
+      "usage": "Add playCrystalDepleted (spatial); wire at crystal-node fillFraction-hits-zero.",
+      "outputs": [
+        {
+          "file": "./output/event/crystal_field_depleted.wav",
+          "type": "sfx",
+          "query": "glass shimmer",
+          "duration_min": 0.5,
+          "duration_max": 2.0
+        }
+      ]
+    },
+    {
+      "id": "crystal_field_respawn",
+      "status": "proposed",
+      "category": "event",
+      "description": "Crystal cluster regrown \u2014 gentle ascending crystalline chime, optimistic.",
+      "usage": "Add playCrystalRespawn (spatial); inverse of depleted.",
+      "outputs": [
+        {
+          "file": "./output/event/crystal_field_respawn.wav",
+          "type": "sfx",
+          "query": "crystal chime",
+          "duration_min": 0.5,
+          "duration_max": 2.0
+        }
+      ]
+    },
+    {
+      "id": "wraith_phase_in",
+      "status": "proposed",
+      "category": "unit_special",
+      "description": "Wraith unit materialising \u2014 reverse-reverb whoosh ending in a sharp tonal pop.",
+      "usage": "Wire into Wraith stealth-system state transition (becoming visible).",
+      "outputs": [
+        {
+          "file": "./output/unit_special/wraith_phase_in.wav",
+          "type": "sfx",
+          "query": "ghost whoosh",
+          "duration_min": 0.3,
+          "duration_max": 1.5
+        }
+      ]
+    },
+    {
+      "id": "wraith_phase_out",
+      "status": "proposed",
+      "category": "unit_special",
+      "description": "Wraith unit fading to stealth \u2014 forward whoosh into silence with faint sibilant tail.",
+      "usage": "Wire into Wraith stealth-system (returning to stealth).",
+      "outputs": [
+        {
+          "file": "./output/unit_special/wraith_phase_out.wav",
+          "type": "alias",
+          "alias_of": "wraith_phase_in"
+        }
+      ]
+    },
+    {
+      "id": "reaver_charge",
+      "status": "proposed",
+      "category": "unit_special",
+      "description": "Bloodhound Reaver charging fuse \u2014 rising mechanical-fleshy whine with quickening heartbeat.",
+      "usage": "Wire into the Reaver AI 'committed' state, giving the defender a brief audio warning.",
+      "outputs": [
+        {
+          "file": "./output/unit_special/reaver_charge.wav",
+          "type": "sfx",
+          "query": "engine rev",
+          "duration_min": 0.5,
+          "duration_max": 2.0
+        }
+      ]
+    },
+    {
+      "id": "vexkin_swarm_flyby",
+      "status": "proposed",
+      "category": "unit_special",
+      "description": "Vexkin swarmlings flying overhead \u2014 high-density wing-buzz Doppler whoosh.",
+      "usage": "Wire into a passive check in GameScene \u2014 tight group of Vexkin swarmlings passing near the camera (throttled).",
+      "outputs": [
+        {
+          "file": "./output/unit_special/vexkin_swarm_flyby.wav",
+          "type": "sfx",
+          "query": "bee swarm",
+          "duration_min": 0.3,
+          "duration_max": 1.5
+        }
+      ]
+    },
+    {
+      "id": "symbiont_siphon_pulse",
+      "status": "proposed",
+      "category": "unit_special",
+      "description": "Symbiont siphon traveling pulse \u2014 soft wet 'thoop' with faint tonal rise. Must not become annoying.",
+      "usage": "Wire (spatial, heavily throttled per-source) into siphon-visual update in GameScene.",
+      "outputs": [
+        {
+          "file": "./output/unit_special/symbiont_siphon_pulse.wav",
+          "type": "sfx",
+          "query": "blip short",
+          "duration_min": 0.05,
+          "duration_max": 0.4
+        }
+      ]
+    },
+    {
+      "id": "commander_low_health",
+      "status": "proposed",
+      "category": "alert",
+      "description": "Commander critically wounded \u2014 solemn slow pulsing tone with low heartbeat thump.",
+      "usage": "Add playCommanderLowHealth; fire when player's commander drops below 25% health (possibly looped at low volume).",
+      "outputs": [
+        {
+          "file": "./output/alert/commander_low_health.wav",
+          "type": "sfx",
+          "query": "heart pulse",
+          "duration_min": 1.0,
+          "duration_max": 3.0
+        }
+      ]
+    }
+  ]
+}
