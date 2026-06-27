@@ -1,6 +1,6 @@
 {
-  "name": "RTSwarm",
-  "short_name": "RTSwarm",
+  "name": "Tribes of Lumenfall",
+  "short_name": "Lumenfall",
   "description": "Mini RTS with tribes, swarms, and quick brawls.",
   "start_url": "./",
   "scope": "./",
