@@ -33,6 +33,40 @@
 
   <title>Lumenfall</title>
   <style>
+    /* Boot loader — inline HTML/CSS so it paints INSTANTLY, before the
+       JS bundle finishes downloading. On a slow connection that bundle
+       fetch is the long wait that used to show a black screen; this
+       gives immediate feedback. Removed by MenuScene once the menu has
+       actually painted (see removeBootLoader). */
+    #boot-loader {
+      position: fixed; inset: 0; z-index: 10000;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center; gap: 22px;
+      background: #070d16; color: #aef0ff;
+      font-family: "Open Sans", Arial, sans-serif;
+      transition: opacity 450ms ease;
+    }
+    #boot-loader.boot-hide { opacity: 0; pointer-events: none; }
+    #boot-title {
+      font-size: 30px; font-weight: 700; letter-spacing: 6px; color: #e8f6ff;
+      text-shadow: 0 0 14px rgba(120,200,255,0.45);
+    }
+    #boot-sub { font-size: 12px; letter-spacing: 3px; opacity: 0.65; }
+    #boot-track {
+      width: min(62vw, 280px); height: 6px; border-radius: 3px;
+      background: rgba(120,180,220,0.18); overflow: hidden;
+    }
+    #boot-bar {
+      height: 100%; width: 40%; border-radius: 3px;
+      background: linear-gradient(90deg, #2aa8ff, #7fe0ff);
+      /* Indeterminate sweep while the bundle downloads — its byte
+         progress isn't readable from the page. JS flips this to a
+         determinate width as assets decode (see setBootProgress). */
+      animation: boot-sweep 1.15s ease-in-out infinite;
+    }
+    #boot-bar.boot-determinate { animation: none; transition: width 250ms ease; }
+    @keyframes boot-sweep { 0% { margin-left: -40%; } 100% { margin-left: 100%; } }
+
     /* Lock the layout to the SMALL viewport height (`100svh`) — that's
        "the visible area when the browser chrome is fully extended".
        We pick svh over dvh because `touch-action: none` keeps the
@@ -121,11 +155,16 @@
       #rotate-nudge { display: flex; }
     }
   </style>
-  <script type="module" crossorigin src="./assets/index-DeeospEH.js"></script>
-  <link rel="modulepreload" crossorigin href="./assets/phaser-BCvT8T1l.js">
+  <script type="module" crossorigin src="./assets/index-CvjDlKSz.js"></script>
+  <link rel="modulepreload" crossorigin href="./assets/phaser-DqLnXR97.js">
   <link rel="stylesheet" crossorigin href="./assets/index-CU7QgcFW.css">
 </head>
 <body>
+  <div id="boot-loader">
+    <div id="boot-title">LUMENFALL</div>
+    <div id="boot-track"><div id="boot-bar"></div></div>
+    <div id="boot-sub">LOADING…</div>
+  </div>
   <div id="game-parent"></div>
   <div id="safe-area-probe"></div>
   <div id="rotate-nudge">↻&nbsp;&nbsp;Please rotate your device<br/>to portrait</div>
