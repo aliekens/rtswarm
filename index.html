@@ -38,27 +38,47 @@
        fetch is the long wait that used to show a black screen; this
        gives immediate feedback. Removed by MenuScene once the menu has
        actually painted (see removeBootLoader). */
+    /* Same widget language as the world-gen screen and every in-game dialog —
+       see ui/NeonPanel.ts for the source of these values. */
     #boot-loader {
       position: fixed; inset: 0; z-index: 10000;
       display: flex; flex-direction: column;
-      align-items: center; justify-content: center; gap: 22px;
-      background: #070d16; color: #aef0ff;
+      align-items: center; justify-content: center;
+      background: #000; color: #aef0ff;
       font-family: "Open Sans", Arial, sans-serif;
       transition: opacity 450ms ease;
     }
     #boot-loader.boot-hide { opacity: 0; pointer-events: none; }
-    #boot-title {
-      font-size: 30px; font-weight: 700; letter-spacing: 6px; color: #e8f6ff;
-      text-shadow: 0 0 14px rgba(120,200,255,0.45);
+    #boot-panel {
+      display: flex; flex-direction: column; align-items: center; gap: 18px;
+      padding: 28px 36px 26px; position: relative;
+      background: rgba(7, 11, 28, 0.97);
+      border: 2px solid #33ccff; border-radius: 6px;
+      box-shadow: 0 0 22px rgba(51, 204, 255, 0.28);
     }
-    #boot-sub { font-size: 12px; letter-spacing: 3px; opacity: 0.65; }
+    #boot-panel::before {
+      content: ''; position: absolute; left: 8px; right: 8px; top: 6px;
+      height: 3px; border-radius: 1px; background: #70dbff;
+    }
+    #boot-title {
+      font-size: 26px; font-weight: 800; letter-spacing: 7px; color: #dff4ff;
+      text-shadow: 0 0 10px rgba(51, 204, 255, 0.75);
+    }
+    #boot-sub {
+      font-size: 10px; letter-spacing: 4px; font-weight: 700; color: #7fdcff;
+      text-shadow: 0 0 8px rgba(51, 204, 255, 0.55);
+    }
     #boot-track {
-      width: min(62vw, 280px); height: 6px; border-radius: 3px;
-      background: rgba(120,180,220,0.18); overflow: hidden;
+      width: min(58vw, 264px); height: 10px; border-radius: 3px;
+      background: rgba(7, 11, 28, 0.97);
+      border: 1px solid #33ccff;
+      box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.75);
+      overflow: hidden; padding: 1px;
     }
     #boot-bar {
-      height: 100%; width: 40%; border-radius: 3px;
-      background: linear-gradient(90deg, #2aa8ff, #7fe0ff);
+      height: 100%; width: 40%; border-radius: 2px;
+      background: linear-gradient(90deg, #1d7fd0, #33ccff 55%, #70dbff);
+      box-shadow: 0 0 12px rgba(51, 204, 255, 0.8);
       /* Indeterminate sweep while the bundle downloads — its byte
          progress isn't readable from the page. JS flips this to a
          determinate width as assets decode (see setBootProgress). */
@@ -66,6 +86,102 @@
     }
     #boot-bar.boot-determinate { animation: none; transition: width 250ms ease; }
     @keyframes boot-sweep { 0% { margin-left: -40%; } 100% { margin-left: 100%; } }
+
+    /* ── WORLD-GEN overlay ──────────────────────────────────────────────
+       Shown while a battlefield is built. The build is SYNCHRONOUS, so the
+       main thread is blocked throughout and nothing driven by JS (or by a
+       layout-affecting property) can animate. Everything here therefore
+       animates via `transform` and `opacity` ONLY — those run on the
+       compositor thread and keep going while script is blocked. That is
+       also why the boot loader's margin-left sweep is not reused: it would
+       freeze solid for the whole build. */
+    #worldgen {
+      position: fixed; inset: 0; z-index: 10001;
+      display: none; flex-direction: column;
+      align-items: center; justify-content: center; gap: 20px;
+      /* Pure black, matching the in-canvas cover the game fades in FROM, so
+         handing over from DOM to canvas shows no seam. */
+      background: #000; color: #aef0ff;
+      font-family: "Open Sans", Arial, sans-serif;
+      /* Starts transparent and fades UP over the menu, so the menu dissolves to
+         black instead of being replaced by it. */
+      opacity: 0;
+      transition: opacity 420ms ease;
+    }
+    #worldgen.wg-on { display: flex; }
+    #worldgen.wg-in { opacity: 1; }
+    /* Content fades to black first, leaving a pure black field; only then does
+       the overlay itself go, so the player never sees the panel pop out. */
+    #worldgen.wg-done > * { opacity: 0; transition: opacity 300ms ease; }
+    #worldgen.wg-hide { opacity: 0; pointer-events: none; }
+    /* Panel chrome mirrors ui/NeonPanel.ts exactly, so the world-gen screen is
+       the same widget language as every dialog in the game:
+         fill        0x070b1c @ 0.97   (NeonPanelOpts.fill / fillAlpha)
+         border      2px 0x33ccff      (default colour, non-compact lineW)
+         radius      6px               (default radius)
+         accent      lighten(colour) strip inset at the top
+       It is CSS rather than a real makeNeonPanel call for one reason: the world
+       build is synchronous, so a Phaser-drawn panel would freeze for its whole
+       duration. Canvas cannot animate here; the compositor can. */
+    #wg-panel {
+      display: flex; flex-direction: column; align-items: center; gap: 18px;
+      padding: 26px 34px 24px;
+      position: relative;
+      background: rgba(7, 11, 28, 0.97);
+      border: 2px solid #33ccff;
+      border-radius: 6px;
+      box-shadow: 0 0 22px rgba(51, 204, 255, 0.28);
+    }
+    /* Top accent strip — lighten(#33ccff, 0.25), inset, as in the widget. */
+    #wg-panel::before {
+      content: ''; position: absolute; left: 8px; right: 8px; top: 6px;
+      height: 3px; border-radius: 1px; background: #70dbff;
+    }
+    #wg-title {
+      font-size: 19px; font-weight: 800; letter-spacing: 7px; color: #dff4ff;
+      text-shadow: 0 0 10px rgba(51, 204, 255, 0.75);
+    }
+    #wg-track {
+      width: min(58vw, 264px); height: 10px; border-radius: 3px;
+      background: rgba(7, 11, 28, 0.97);
+      border: 1px solid #33ccff;
+      box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.75);
+      overflow: hidden; padding: 1px;
+    }
+    #wg-bar {
+      height: 100%; width: 100%; border-radius: 2px; transform-origin: left center;
+      background: linear-gradient(90deg, #1d7fd0, #33ccff 55%, #70dbff);
+      box-shadow: 0 0 12px rgba(51, 204, 255, 0.8);
+      /* scaleX, not width: width is layout and would stall while the build
+         blocks the main thread. */
+      animation: wg-fill 2.6s cubic-bezier(.25,.8,.35,1) forwards;
+    }
+    @keyframes wg-fill {
+      0%   { transform: scaleX(0.02); }
+      35%  { transform: scaleX(0.45); }
+      70%  { transform: scaleX(0.78); }
+      100% { transform: scaleX(0.97); }
+    }
+    /* Captions CUT between states (steps), so the line reads as being replaced
+       rather than cross-fading. Opacity only — compositor-driven. */
+    #wg-steps { position: relative; height: 15px; width: min(58vw, 264px); }
+    #wg-steps span {
+      position: absolute; inset: 0; text-align: center;
+      font-size: 10px; letter-spacing: 4px; font-weight: 700;
+      color: #7fdcff; text-shadow: 0 0 8px rgba(51, 204, 255, 0.55);
+      opacity: 0;
+      animation: wg-step 2.6s steps(1, end) forwards;
+    }
+    #wg-steps span:nth-child(1) { animation-delay: 0s; }
+    #wg-steps span:nth-child(2) { animation-delay: .52s; }
+    #wg-steps span:nth-child(3) { animation-delay: 1.04s; }
+    #wg-steps span:nth-child(4) { animation-delay: 1.56s; }
+    #wg-steps span:nth-child(5) { animation-delay: 2.08s; }
+    @keyframes wg-step {
+      0%   { opacity: 1; }
+      20%  { opacity: 0; }
+      100% { opacity: 0; }
+    }
 
     /* Lock the layout to the SMALL viewport height (`100svh`) — that's
        "the visible area when the browser chrome is fully extended".
@@ -155,15 +271,30 @@
       #rotate-nudge { display: flex; }
     }
   </style>
-  <script type="module" crossorigin src="./assets/index-CQyXhFoD.js"></script>
+  <script type="module" crossorigin src="./assets/index-BYE3j6K4.js"></script>
   <link rel="modulepreload" crossorigin href="./assets/phaser-DqLnXR97.js">
   <link rel="stylesheet" crossorigin href="./assets/index-CU7QgcFW.css">
 </head>
 <body>
   <div id="boot-loader">
+   <div id="boot-panel">
     <div id="boot-title">LUMENFALL</div>
     <div id="boot-track"><div id="boot-bar"></div></div>
     <div id="boot-sub">LOADING…</div>
+   </div>
+  </div>
+  <div id="worldgen">
+   <div id="wg-panel">
+    <div id="wg-title">CREATING WORLD</div>
+    <div id="wg-track"><div id="wg-bar"></div></div>
+    <div id="wg-steps">
+      <span>RAISING TERRAIN</span>
+      <span>FLOODING COASTLINE</span>
+      <span>RUNNING RIVERS</span>
+      <span>SCATTERING CRYSTALS</span>
+      <span>PLACING ARMIES</span>
+    </div>
+   </div>
   </div>
   <div id="game-parent"></div>
   <div id="safe-area-probe"></div>
